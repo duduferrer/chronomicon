@@ -1,6 +1,12 @@
 # PROJETO CHRONOMICON
 Projeto para atualização do livro eletronico do APP-BH.
 
+
+<div align="center">
+<img src="https://lh3.googleusercontent.com/gg/AN12HXToSUsUjFDQqiFqAkPMr2b1fgAzdhZ-ekJia4MjYbxenDXm--xH-v6N3vU4vhiew5glWGzVIdLQJ207WOllmeufH9_n_9sp69rVnsXou70yWxYhAYF3dMkeeqmVUcNNiNwnNGM9Jk800-BVw1M_Zt7ZHAxkl_GFOEne4UOhoxOy17fMicIJ"/>
+</div>
+
+
 ## Funcionalidades:
   - Registro de operadores com sua função no órgão
   - Inclusão de equipe de serviço
