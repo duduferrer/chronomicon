@@ -3,7 +3,7 @@ Projeto para atualização do livro eletronico do APP-BH.
 
 
 <div align="center">
-<img src="https://i.ibb.co/cX2V7ZM7/Gemini-Generated-Image-li11xtli11xtli11.jpg"/>
+<img src="https://i.ibb.co/cX2V7ZM7/Gemini-Generated-Image-li11xtli11xtli11.jpg" height="200px/>
 </div>
 
 
