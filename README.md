@@ -3,7 +3,7 @@ Projeto para atualização do livro eletronico do APP-BH.
 
 
 <div align="center">
-<img src="https://i.ibb.co/cX2V7ZM7/Gemini-Generated-Image-li11xtli11xtli11.jpg" height="200px"/>
+<img src="https://i.ibb.co/cX2V7ZM7/Gemini-Generated-Image-li11xtli11xtli11.jpg" height="400px"/>
 </div>
 
 
@@ -25,7 +25,7 @@ Projeto para atualização do livro eletronico do APP-BH.
   - TBD
 
 
-3 - Bibliotecas Frontend:
+# 3 - Bibliotecas Frontend (Estudem isso):
   - React (Fazer um app que renderiza componentes ao inves de ficar atualizando a pagina)
   - Shadcn (Facilita a crição de componentes menores)
   - Tailwind CSS (Facilita o uso e padronização do CSS)
