@@ -1,0 +1,47 @@
+# Maven
+**/target/
+**/logs/
+**/*.log
+**/.classpath
+**/.project
+**/.settings/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code (caso alguém use)
+.vscode/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Sistema operacional
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# Arquivos temporários
+*.tmp
+*.swp
+*.swo
+
+# Configuração do wrapper do Maven
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Arquivos de build
+build/
+bin/
+
+# Arquivos de ambiente/local
+.env
+application-local.properties
+application-dev.properties
+application-prod.properties
+
+# Scripts BD
+**/scripts
