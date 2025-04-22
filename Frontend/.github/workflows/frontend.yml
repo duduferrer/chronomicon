@@ -1,0 +1,37 @@
+name: Frontend CI
+
+on: [push, pull_request]
+
+jobs:
+  frontend-checks:
+    name: Frontend - Lint & Commit Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run CommitLint
+        run: |
+          npx commitlint --from=$(git rev-list --max-parents=0 HEAD) --to=HEAD
+  
+
+      # - name: Run tests
+      #   run: npm test
+
+
+
