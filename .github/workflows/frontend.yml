@@ -29,8 +29,8 @@ jobs:
 
       - name: Run CommitLint
         run: |
-          npx commitlint --from=$(git rev-list --max-parents=0 HEAD) --to=HEAD
-  
+          npx commitlint --from=${{ github.event.before }} --to=${{ github.sha }}
+
 
       # - name: Run tests
       #   run: npm test
