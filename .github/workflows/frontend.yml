@@ -1,6 +1,6 @@
 name: Frontend CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   frontend-checks:
@@ -13,11 +13,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: v22.13.1
 
       - name: Install dependencies
         run: npm ci
@@ -27,8 +29,8 @@ jobs:
 
       - name: Run CommitLint
         run: |
-          npx commitlint --from=$(git rev-list --max-parents=0 HEAD) --to=HEAD
-  
+          npx commitlint --from=${{ github.event.before }} --to=${{ github.sha }}
+
 
       # - name: Run tests
       #   run: npm test
