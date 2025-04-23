@@ -24,6 +24,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Get last commit date
+        id: last_commit
+        run: |
+          lint_start_date="2025-04-22"
+          last_commit_date=$(git log -1 --format=%cd)
+          if [[ "$last_commit_date" < "$lint_start_date" ]]; then
+            echo "Commit anterior à implementação do linter. Ignorando execução do linter."
+            echo "skip_linter=true" >> $GITHUB_ENV
+          else
+            echo "skip_linter=false" >> $GITHUB_ENV
+          fi
+
       - name: Run ESLint
         run: npm run lint
 
