@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tb_staff")
-public class StaffEntity {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -20,12 +20,14 @@ public class StaffEntity {
     private boolean supervisor;
     private boolean instructor;
     private boolean trainee;
+    private boolean activeUser = true;
 
 
-    public StaffEntity() {
+    public UserEntity() {
     }
 
-    public StaffEntity(Rank rank, long id, String lpna_identifier, short hierarchy, String full_name, String service_name, boolean supervisor, boolean instructor, boolean trainee) {
+    public UserEntity(Rank rank, long id, String lpna_identifier, short hierarchy, String full_name, String service_name,
+                      boolean supervisor, boolean instructor, boolean trainee) {
         this.rank = rank;
         this.id = id;
         this.lpna_identifier = lpna_identifier;
@@ -35,6 +37,7 @@ public class StaffEntity {
         this.supervisor = supervisor;
         this.instructor = instructor;
         this.trainee = trainee;
+        this.activeUser = true;
     }
 
     public Rank getRank() {
@@ -103,5 +106,12 @@ public class StaffEntity {
 
     public void setTrainee(boolean trainee) {
         this.trainee = trainee;
+    }
+    public boolean isActiveUser() {
+        return activeUser;
+    }
+
+    public void setActiveUser(boolean activeUser) {
+        this.activeUser = activeUser;
     }
 }
