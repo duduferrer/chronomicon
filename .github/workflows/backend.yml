@@ -1,0 +1,51 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'Backend/**'
+  pull_request:
+    paths:
+      - 'Backend/**'
+
+jobs:
+  backend-checks:
+    name: Build & Test Java Backend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('Backend/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build and Test
+        run: mvn clean verify
+      
+      - name: Get last commit date
+        id: last_commit
+        run: |
+          lint_start_date="2025-04-22"
+          last_commit_date=$(git log -1 --format=%cd)
+          if [[ "$last_commit_date" < "$lint_start_date" ]]; then
+            echo "Commit anterior à implementação do linter. Ignorando execução do linter."
+            echo "skip_linter=true" >> $GITHUB_ENV
+          else
+            echo "skip_linter=false" >> $GITHUB_ENV
+          fi
