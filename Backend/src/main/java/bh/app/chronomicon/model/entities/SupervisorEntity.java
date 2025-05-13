@@ -14,7 +14,7 @@ public class SupervisorEntity {
 
     @ManyToOne
     @JoinColumn(name = "lpna_identifier")
-    private StaffEntity operator;
+    private UserEntity operator;
 
     private Duration workload;
 
@@ -25,7 +25,7 @@ public class SupervisorEntity {
     public SupervisorEntity() {
     }
 
-    public SupervisorEntity(int id, StaffEntity operator, Duration workload, RosterEntity shift) {
+    public SupervisorEntity(int id, UserEntity operator, Duration workload, RosterEntity shift) {
         this.id = id;
         this.operator = operator;
         this.workload = workload;
@@ -37,11 +37,11 @@ public class SupervisorEntity {
     }
 
 
-    public StaffEntity getOperator() {
+    public UserEntity getOperator() {
         return operator;
     }
 
-    public void setOperator(StaffEntity operator) {
+    public void setOperator(UserEntity operator) {
         this.operator = operator;
     }
 
