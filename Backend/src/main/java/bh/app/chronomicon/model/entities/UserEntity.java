@@ -3,6 +3,8 @@ package bh.app.chronomicon.model.entities;
 import bh.app.chronomicon.model.enums.Rank;
 import jakarta.persistence.*;
 
+import java.util.Optional;
+
 @Entity
 @Table(name = "tb_staff")
 public class UserEntity {
@@ -38,6 +40,18 @@ public class UserEntity {
         this.instructor = instructor;
         this.trainee = trainee;
         this.activeUser = true;
+    }
+    public UserEntity(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+                      boolean supervisor, boolean instructor, boolean trainee, Boolean activeUser) {
+        this.rank = rank;
+        this.lpna_identifier = lpna_identifier;
+        this.hierarchy = hierarchy;
+        this.full_name = full_name;
+        this.service_name = service_name;
+        this.supervisor = supervisor;
+        this.instructor = instructor;
+        this.trainee = trainee;
+        this.activeUser = activeUser != null ? activeUser : true;
     }
 
     public Rank getRank() {
