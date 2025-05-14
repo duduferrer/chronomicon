@@ -1,0 +1,188 @@
+package bh.app.chronomicon.repository;
+
+import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.enums.Rank;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@DataJpaTest
+@ActiveProfiles("test")
+class UserRepositoryTest {
+
+    @Autowired
+    EntityManager entityManager;
+
+    @Autowired
+    UserRepository repository;
+    //    CREATE USER WITH ACTIVEUSER To be defined
+    private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+                                  boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
+        UserEntity user = new UserEntity(rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
+                instructor, trainee, activeUser);
+        this.entityManager.persist(user);
+        return user;
+    }
+    //    CREATE USER WITH ACTIVEUSER TRUE
+    private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+                                  boolean supervisor, boolean instructor, boolean trainee){
+        UserEntity user = new UserEntity(rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
+                instructor, trainee, true);
+        this.entityManager.persist(user);
+        return user;
+    }
+
+
+
+    @Test
+    @DisplayName("Search if there is already a user created with this LPNA and return true")
+    void existsByLpnaIdentifierSuccess() {
+        createUser(Rank.TERCEIRO_SGT, "AAAA", (short) 0, "Bruce Wayne", "Wayne",
+                true, true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "BBBB", (short) 1, "Clark Kent", "Kent",
+                true, false, true, true);
+
+        boolean result = repository.existsByLpnaIdentifier("AAAA");
+        assertTrue(result);
+    }
+    @Test
+    @DisplayName("Search if there is already a user created with this LPNA and return false")
+    void existsByLpnaIdentifierFail() {
+        createUser(Rank.TERCEIRO_SGT, "AAAA", (short) 0, "Bruce Wayne", "Wayne",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "BBBB", (short) 1, "Clark Kent", "Kent",
+                true, false, true);
+        boolean result = repository.existsByLpnaIdentifier("PPIA");
+        assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("Should get a list of active users that are supervisors and return ordered by hierarchy")
+    void findSupsOrderByHierarchy() {
+        createUser(Rank.TERCEIRO_SGT, "PPPP", (short) 8, "Kenny", "Kenny",
+                true, false, true, false);
+        createUser(Rank.TERCEIRO_SGT,  "GGGG", (short) 6, "Eric Cartman", "Cartman",
+                true, false, false);
+        createUser(Rank.TERCEIRO_SGT, "HHHH", (short) 7, "Stanley Marsh", "Stanley Marsh",
+                false, false, true);
+        createUser(Rank.TERCEIRO_SGT,  "AABB", (short) 0, "Kyle Broflovsky", "Kyle",
+                true, true, true);
+        createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+                true, true, false);
+        List<UserEntity> result =  repository.findSupsOrderByHierarchy();
+        assertEquals(3, result.size());
+        assertEquals("Kyle", result.get(0).getService_name());
+        assertEquals("Butters", result.get(1).getService_name());
+        assertEquals("Cartman", result.get(2).getService_name());
+    }
+
+    @Test
+    @DisplayName("Should get a list of active users and return ordered by hierarchy")
+    void findActiveUsersOrderByHierarchy() {
+        createUser(Rank.TERCEIRO_SGT, "PPPP", (short) 8, "Kenny", "Kenny",
+                true, false, true, false);
+        createUser(Rank.TERCEIRO_SGT,  "GGGG", (short) 6, "Eric Cartman", "Cartman",
+                true, false, false);
+        createUser(Rank.TERCEIRO_SGT, "HHHH", (short) 7, "Stanley Marsh", "Stanley Marsh",
+                false, false, true);
+        createUser(Rank.TERCEIRO_SGT,  "AABB", (short) 0, "Kyle Broflovsky", "Kyle",
+                true, false, false);
+        List<UserEntity> result = repository.findActiveUsersOrderByHierarchy();
+        assertEquals(3, result.size());
+        assertEquals("Kyle", result.get(0).getService_name());
+        assertEquals("Cartman", result.get(1).getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getService_name());
+    }
+
+    @Test
+    @DisplayName("Should get a list of active users that are instructors and return ordered by hierarchy")
+    void findInstsOrderByHierarchy() {
+        createUser(Rank.TERCEIRO_SGT, "PPPP", (short) 8, "Kenny", "Kenny",
+                true, true, true, false);
+        createUser(Rank.TERCEIRO_SGT,  "GGGG", (short) 6, "Eric Cartman", "Cartman",
+                true, true, false);
+        createUser(Rank.TERCEIRO_SGT, "HHHH", (short) 7, "Stanley Marsh", "Stanley Marsh",
+                false, true, true);
+        createUser(Rank.TERCEIRO_SGT,  "AABB", (short) 0, "Kyle Broflovsky", "Kyle",
+                true, false, false);
+        createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+                true, true, false);
+        List<UserEntity> result = repository.findInstsOrderByHierarchy();
+        assertEquals(3, result.size());
+        assertEquals("Butters", result.get(0).getService_name());
+        assertEquals("Cartman", result.get(1).getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getService_name());
+    }
+
+    @Test
+    @DisplayName("Should get a list of active users that are trainees and return ordered by hierarchy")
+    void findTraineesOrderByHierarchy() {
+        createUser(Rank.TERCEIRO_SGT, "PPPP", (short) 8, "Kenny", "Kenny",
+                true, true, true, false);
+        createUser(Rank.TERCEIRO_SGT,  "GGGG", (short) 6, "Eric Cartman", "Cartman",
+                false, true, true);
+        createUser(Rank.TERCEIRO_SGT, "HHHH", (short) 7, "Stanley Marsh", "Stanley Marsh",
+                true, true, true);
+        createUser(Rank.TERCEIRO_SGT,  "AABB", (short) 0, "Kyle Broflovsky", "Kyle",
+                true, false, false);
+        createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+                true, false, true);
+        List<UserEntity> result = repository.findTraineesOrderByHierarchy();
+        assertEquals(3, result.size());
+        assertEquals("Butters", result.get(0).getService_name());
+        assertEquals("Cartman", result.get(1).getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getService_name());
+    }
+
+    @Test
+    @DisplayName("Should get a list of active users that are ONLY operators and return ordered by hierarchy")
+    void findOnlyOpsOrderByHierarchy() {
+        createUser(Rank.TERCEIRO_SGT, "PPPP", (short) 8, "Kenny", "Kenny",
+                true, true, true, false);
+        createUser(Rank.TERCEIRO_SGT,  "GGGG", (short) 6, "Eric Cartman", "Cartman",
+                false, false, false);
+        createUser(Rank.TERCEIRO_SGT, "HHHH", (short) 7, "Stanley Marsh", "Stanley Marsh",
+                false, false, false);
+        createUser(Rank.TERCEIRO_SGT,  "AABB", (short) 0, "Kyle Broflovsky", "Kyle",
+                true, false, false);
+        createUser(Rank.TERCEIRO_SGT,  "ACBB", (short) 3, "Clyde", "Clyde",
+                true, true, true);
+        createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+                false, false, false);
+        List<UserEntity> result = repository.findOnlyOpsOrderByHierarchy();
+        assertEquals(3, result.size());
+        assertEquals("Butters", result.get(0).getService_name());
+        assertEquals("Cartman", result.get(1).getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getService_name());
+    }
+
+    @Test
+    @DisplayName("Should get a user by userID")
+    void findUserById() {
+         UserEntity user = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+                false, false, false);
+         Long userID = user.getId();
+         UserEntity result = repository.findUserById(userID);
+         assertEquals("Butters", result.getService_name());
+    }
+
+    @Test
+    @DisplayName("Should get a user by lpna identifier")
+    void findUserByLPNA() {
+        UserEntity user = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+                false, false, false);
+        String userLPNA = user.getLpna_identifier();
+        UserEntity result = repository.findUserByLPNA(userLPNA);
+        assertEquals("Butters", result.getService_name());
+    }
+}

@@ -32,4 +32,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("SELECT user FROM UserEntity user WHERE user.id = :id")
     UserEntity findUserById(@Param("id") Long id);
 
+    @Query("SELECT user FROM UserEntity user WHERE user.lpna_identifier = :lpna_identifier")
+    UserEntity findUserByLPNA(@Param("lpna_identifier") String lpna_identifier);
+
 }
