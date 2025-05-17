@@ -55,4 +55,9 @@ public class UserController {
         URI location = URI.create(savedUser.lpna_identifier());
         return ResponseEntity.created(location).body(savedUser);
     }
+
+    @GetMapping(value = {"/lpna/{lpna}"})
+    public UserDTO findByLPNA(@PathVariable String lpna){
+        return service.findUserByLPNA(lpna);
+    }
 }
