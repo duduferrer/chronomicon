@@ -8,13 +8,14 @@ public record UserDTO(
         String full_name,
         String service_name,
         Rank rank,
+        short hierarchy,
         boolean supervisor,
         boolean instructor,
         boolean trainee
 ) {
     public UserDTO(UserEntity user){
-        this(user.getLpna_identifier(), user.getFull_name(), user.getService_name(), user.getRank(), user.isSupervisor(),
-                user.isInstructor(), user.isTrainee());
+        this(user.getLpna_identifier(), user.getFull_name(), user.getService_name(), user.getRank(),
+                user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
     }
 
 }

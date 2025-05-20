@@ -185,4 +185,66 @@ class UserRepositoryTest {
         UserEntity result = repository.findUserByLPNA(userLPNA);
         assertEquals("Butters", result.getService_name());
     }
+
+    @Test
+    @DisplayName("Search if there is already a user created with this Hierarchy and return true")
+    void existsByHierarchySuccess() {
+        UserEntity user = createUser(Rank.TERCEIRO_SGT, "AAAA", (short) 0, "Bruce Wayne", "Wayne",
+                true, true, true, true);
+
+        boolean result = repository.existsByHierarchy(user.getHierarchy());
+        assertTrue(result);
+    }
+    @Test
+    @DisplayName("Search if there is already a user created with this Hierarchy and return false")
+    void existsByHierarchyFail() {
+        UserEntity user = createUser(Rank.SEGUNDO_SGT,  "BBBB", (short) 1, "Clark Kent", "Kent",
+                true, false, true);
+        boolean result = repository.existsByHierarchy((short)0);
+        assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("Shift hierarchy of all users between target and 999")
+    void shiftActiveUsersHierarchy() {
+        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true);
+        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
+                true, false, true);
+        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 3, "Barry Allen", "Flash",
+                true, false, true);
+        UserEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1000, "Chapolin Colorado", "Chapolin Colorado",
+                true, false, true);
+        repository.shiftActiveUsersHierarchy(user2.getHierarchy());
+        entityManager.flush();
+        entityManager.clear();
+        List<UserEntity> users = repository.findActiveUsersOrderByHierarchy();
+        assertEquals(1, users.get(0).getHierarchy());
+        assertEquals(3, users.get(1).getHierarchy());
+        assertEquals(4, users.get(2).getHierarchy());
+        assertEquals(1000, users.get(3).getHierarchy());
+    }
+
+    @Test
+    @DisplayName("Shift hierarchy of all users between target and over 1000")
+    void shiftInactiveUsersHierarchy() {
+        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true);
+        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 1001, "John Stewart", "Lanterna Verde",
+                true, false, true);
+        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 1002, "Barry Allen", "Flash",
+                true, false, true);
+        UserEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1003, "Chapolin Colorado", "Chapolin Colorado",
+                true, false, true);
+        repository.shiftInactiveUsersHierarchy(user2.getHierarchy());
+        entityManager.flush();
+        entityManager.clear();
+
+        List<UserEntity> users = repository.findActiveUsersOrderByHierarchy();
+        assertEquals(1, users.get(0).getHierarchy());
+        assertEquals(1002, users.get(1).getHierarchy());
+        assertEquals(1003, users.get(2).getHierarchy());
+        assertEquals(1004, users.get(3).getHierarchy());
+    }
+
 }

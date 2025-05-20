@@ -1,11 +1,11 @@
 package bh.app.chronomicon.service;
 
-import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.LpnaAlreadyExistsException;
 import bh.app.chronomicon.exception.UserNotFoundException;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public class UserService {
         return userRepository.findSupsOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                        user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
+                        user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                         .toList();
     }
 
@@ -29,7 +29,7 @@ public class UserService {
         return userRepository.findActiveUsersOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                        user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
+                        user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
@@ -37,7 +37,7 @@ public class UserService {
         return userRepository.findInstsOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                        user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
+                        user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
@@ -45,7 +45,7 @@ public class UserService {
         return userRepository.findTraineesOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                        user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
+                        user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
@@ -53,7 +53,7 @@ public class UserService {
         return userRepository.findOnlyOpsOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                        user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
+                        user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
@@ -61,25 +61,23 @@ public class UserService {
         UserEntity user = userRepository.findUserById(id);
         try{
             return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                            user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
+                    user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
         } catch (RuntimeException e) {
             throw new UserNotFoundException("Usuário não encontrado.");
         }
     }
 
-    public UserDTO createNewUser(CreateUserDTO user) {
+    @Transactional
+    public UserDTO createNewUser(UserDTO user) {
 
         checkLpnaAlreadyRegistered(user.lpna_identifier());
 
-        UserEntity userEntity = new UserEntity();
-        userEntity.setLpna_identifier(user.lpna_identifier());
-        userEntity.setRank(user.rank());
-        userEntity.setFull_name(user.full_name());
-        userEntity.setHierarchy(user.hierarchy());
-        userEntity.setService_name(user.service_name());
-        userEntity.setSupervisor(user.supervisor());
-        userEntity.setInstructor(user.instructor());
-        userEntity.setTrainee(user.trainee());
+
+        if(hierarchyAlreadyExists(user.hierarchy())){
+            shiftActiveUsersHierarchy(user.hierarchy());
+        }
+
+        UserEntity userEntity = new UserEntity(user);
         userRepository.save(userEntity);
         return new UserDTO(userEntity);
     }
@@ -88,7 +86,7 @@ public class UserService {
         UserEntity user = userRepository.findUserByLPNA(lpna);
         try{
             return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                    user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
+                    user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
         }catch (RuntimeException e){
             throw new UserNotFoundException("Usuário não encontrado.");
         }
@@ -98,6 +96,16 @@ public class UserService {
         if(userRepository.existsByLpnaIdentifier(lpna)){
             throw new LpnaAlreadyExistsException("Ja existe um usuario cadastrado usando esse indicativo LPNA: "+ lpna);
         }
+    }
+
+    private boolean hierarchyAlreadyExists(short hierarchy){
+        return userRepository.existsByHierarchy(hierarchy);
+    }
+
+
+    private void shiftActiveUsersHierarchy(short hierarchy){
+        userRepository.shiftActiveUsersHierarchy(hierarchy);
+        userRepository.flush();
     }
 
 

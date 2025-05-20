@@ -1,6 +1,7 @@
 package bh.app.chronomicon.repository;
 import bh.app.chronomicon.model.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,18 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.lpna_identifier = :lpna_identifier")
     boolean existsByLpnaIdentifier(@Param("lpna_identifier") String lpna_identifier);
+
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN true ELSE false END FROM UserEntity u WHERE u.hierarchy = :hierarchy")
+    boolean existsByHierarchy(@Param("hierarchy") short hierarchy);
+
+    @Modifying
+    @Query("UPDATE UserEntity user SET user.hierarchy = user.hierarchy + 1 WHERE user.hierarchy >= :hierarchy AND user.hierarchy < 1000")
+    void shiftActiveUsersHierarchy(@Param("hierarchy") short hierarchy);
+
+    @Modifying
+    @Query("UPDATE UserEntity user SET user.hierarchy = user.hierarchy + 1 WHERE user.hierarchy >= :hierarchy AND user.hierarchy > 1000")
+    void shiftInactiveUsersHierarchy(@Param("hierarchy") short hierarchy);
+
 
     @Query("SELECT user from UserEntity user WHERE user.activeUser = true AND user.supervisor = true ORDER BY user.hierarchy ASC")
     List<UserEntity> findSupsOrderByHierarchy();
