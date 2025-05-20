@@ -247,4 +247,62 @@ class UserRepositoryTest {
         assertEquals(1004, users.get(3).getHierarchy());
     }
 
+
+    @Test
+    @DisplayName("Should activate an inactive user")
+    void activateUser() {
+        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true, false);
+        repository.activateUser(user.getLpna_identifier());
+        entityManager.flush();
+        entityManager.clear();
+        boolean userStatus = repository.findUserByLPNA(user.getLpna_identifier()).isActive();
+        assertTrue(userStatus);
+    }
+
+    @Test
+    @DisplayName("Should deactivate an active user")
+    void deactivateUser() {
+        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+            true, false, true, true);
+        repository.deactivateUser(user.getLpna_identifier());
+        entityManager.flush();
+        entityManager.clear();
+        boolean userStatus = repository.findUserByLPNA(user.getLpna_identifier()).isActive();
+        assertFalse(userStatus);
+
+    }
+
+    @Test
+    @DisplayName("Should update user hierarchy searching by LPNA identifier")
+    void updateUserHierarchy() {
+        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true, false);
+        repository.updateUserHierarchy((short)7, "AAAA");
+        entityManager.flush();
+        entityManager.clear();
+        short userHierarchy = repository.findUserByLPNA(user.getLpna_identifier()).getHierarchy();
+        assertEquals(7, userHierarchy);
+    }
+
+    @Test
+    @DisplayName("Should get a list of users from same rank, ordered by hierarchy")
+    void getUsersOrderedByLowestHierarchyFromRank(){
+        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true);
+        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
+                true, false, true);
+        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 4, "Barry Allen", "Flash",
+                true, false, true);
+        UserEntity user4 = createUser(Rank.TERCEIRO_SGT,  "DDDD", (short) 3, "Chapolin Colorado", "Chapolin Colorado",
+                true, false, true);
+        entityManager.flush();
+        entityManager.clear();
+        List<UserEntity> userList = repository.getUsersOrderedByLowestHierarchyFromRank(Rank.TERCEIRO_SGT);
+        assertEquals("Lanterna Verde", userList.get(0).getService_name());
+        assertEquals("Chapolin", userList.get(1).getService_name());
+        assertEquals("Flash", userList.get(2).getService_name());
+    }
+
+
 }

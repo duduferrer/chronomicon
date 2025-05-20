@@ -1,8 +1,8 @@
 package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.UserDTO;
-import bh.app.chronomicon.exception.LpnaAlreadyExistsException;
-import bh.app.chronomicon.exception.UserNotFoundException;
+import bh.app.chronomicon.exception.ConflictException;
+import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.model.enums.Rank;
 import bh.app.chronomicon.repository.UserRepository;
@@ -183,7 +183,7 @@ class UserServiceTest {
         createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
         UserDTO userDTO = new UserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, (short) 0, false, false, false);
-        assertThrows(LpnaAlreadyExistsException.class, ()->{
+        assertThrows(ConflictException.class, ()->{
             userService.createNewUser(userDTO);
         } );
 
@@ -237,7 +237,7 @@ class UserServiceTest {
         createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
 
-        assertThrows(UserNotFoundException.class, ()->{
+        assertThrows(NotFoundException.class, ()->{
             userService.findUserByLPNA("AAAA");
         });
     }
@@ -249,8 +249,108 @@ class UserServiceTest {
         UserEntity user = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
 
-        assertThrows(UserNotFoundException.class, ()->{
+        assertThrows(NotFoundException.class, ()->{
             userService.findUserById(user.getId()+1);
+        });
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Should activate an inactive user")
+    void activateUser() {
+        createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
+                true, true, false);
+        createUser(Rank.PRIMEIRO_SGT,  "BBBB", (short) 1, "Vegeta", "Vegeta",
+                false, true, true);
+        createUser(Rank.SEGUNDO_SGT, "CCCC", (short) 2, "Picclo", "Piccolo",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 3, "Kuririn", "Kuririn",
+                true, false, true);
+        createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 4, "Son Gohan", "Gohan",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "FFFF", (short) 1001, "Yamcha", "Yamcha",
+                true, true, true, false);
+        createUser(Rank.SUBOFICIAL,  "GGGG", (short) 1002, "Mestre Kame", "Mestre Kame",
+                true, true, true, false);
+        userService.activateUser("FFFF");
+        entityManager.clear();
+        UserEntity user = userRepository.findUserByLPNA("FFFF");
+        boolean userStatus = user.isActive();
+        short hierarchy = user.getHierarchy();
+        assertTrue(userStatus);
+        assertEquals(4, hierarchy);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Should deactivate an active user")
+    void deactivateUser() {
+        createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
+                true, true, false);
+        createUser(Rank.PRIMEIRO_SGT,  "BBBB", (short) 1, "Vegeta", "Vegeta",
+                false, true, true);
+        createUser(Rank.SEGUNDO_SGT, "CCCC", (short) 2, "Picclo", "Piccolo",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 3, "Kuririn", "Kuririn",
+                true, false, true);
+        createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 4, "Son Gohan", "Gohan",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "FFFF", (short) 1001, "Yamcha", "Yamcha",
+                true, true, true, false);
+        createUser(Rank.SUBOFICIAL,  "GGGG", (short) 1002, "Mestre Kame", "Mestre Kame",
+                true, true, true, false);
+        userService.deactivateUser("BBBB");
+        entityManager.clear();
+        UserEntity user = userRepository.findUserByLPNA("BBBB");
+        boolean userStatus = user.isActive();
+        short hierarchy = user.getHierarchy();
+        assertFalse(userStatus);
+        assertEquals(1001, hierarchy);
+    }
+    @Test
+    @Transactional
+    @DisplayName("Should return exception when trying to activate an active user")
+    void activateUserException() {
+        createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
+                true, true, false);
+        createUser(Rank.PRIMEIRO_SGT,  "BBBB", (short) 1, "Vegeta", "Vegeta",
+                false, true, true);
+        createUser(Rank.SEGUNDO_SGT, "CCCC", (short) 2, "Picclo", "Piccolo",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 3, "Kuririn", "Kuririn",
+                true, false, true);
+        createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 4, "Son Gohan", "Gohan",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "FFFF", (short) 1001, "Yamcha", "Yamcha",
+                true, true, true, false);
+        createUser(Rank.SUBOFICIAL,  "GGGG", (short) 1002, "Mestre Kame", "Mestre Kame",
+                true, true, true, false);
+
+        assertThrows(ConflictException.class, ()->{
+            userService.activateUser("AAAA");
+        });
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Should return exception when trying to deactivate an inactive user")
+    void deactivateUserException() {
+        createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
+                true, true, false);
+        createUser(Rank.PRIMEIRO_SGT,  "BBBB", (short) 1, "Vegeta", "Vegeta",
+                false, true, true);
+        createUser(Rank.SEGUNDO_SGT, "CCCC", (short) 2, "Picclo", "Piccolo",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 3, "Kuririn", "Kuririn",
+                true, false, true);
+        createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 4, "Son Gohan", "Gohan",
+                true, true, true);
+        createUser(Rank.SEGUNDO_SGT,  "FFFF", (short) 1001, "Yamcha", "Yamcha",
+                true, true, true, false);
+        createUser(Rank.SUBOFICIAL,  "GGGG", (short) 1002, "Mestre Kame", "Mestre Kame",
+                true, true, true, false);
+        assertThrows(ConflictException.class, ()->{
+            userService.deactivateUser("GGGG");
         });
     }
 }

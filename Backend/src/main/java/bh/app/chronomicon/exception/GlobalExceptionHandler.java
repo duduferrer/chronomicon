@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(LpnaAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponseDTO> handleLpnaAlreadyExistsException(LpnaAlreadyExistsException exception){
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponseDTO> handleLpnaAlreadyExistsException(ConflictException exception){
         ErrorResponseDTO response = new ErrorResponseDTO(
                 HttpStatus.CONFLICT.value(),
                 exception.getMessage(),
@@ -20,8 +20,8 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException exception){
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(NotFoundException exception){
         ErrorResponseDTO response = new ErrorResponseDTO(
                 HttpStatus.NO_CONTENT.value(),
                 exception.getMessage(),
