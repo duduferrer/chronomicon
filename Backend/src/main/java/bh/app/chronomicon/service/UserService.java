@@ -2,6 +2,8 @@ package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
+import bh.app.chronomicon.exception.LpnaAlreadyExistsException;
+import bh.app.chronomicon.exception.UserNotFoundException;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,14 +59,18 @@ public class UserService {
 
     public UserDTO findUserById(Long id) {
         UserEntity user = userRepository.findUserById(id);
-        return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
-                        user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
+        try{
+            return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                            user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
+        } catch (RuntimeException e) {
+            throw new UserNotFoundException("Usuário não encontrado.");
+        }
     }
 
     public UserDTO createNewUser(CreateUserDTO user) {
-        if(userRepository.existsByLpnaIdentifier(user.lpna_identifier())){
-            throw new IllegalArgumentException("LPNA já cadastrado.");
-        }
+
+        checkLpnaAlreadyRegistered(user.lpna_identifier());
+
         UserEntity userEntity = new UserEntity();
         userEntity.setLpna_identifier(user.lpna_identifier());
         userEntity.setRank(user.rank());
@@ -76,6 +82,22 @@ public class UserService {
         userEntity.setTrainee(user.trainee());
         userRepository.save(userEntity);
         return new UserDTO(userEntity);
+    }
+
+    public UserDTO findUserByLPNA(String lpna){
+        UserEntity user = userRepository.findUserByLPNA(lpna);
+        try{
+            return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                    user.getRank(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
+        }catch (RuntimeException e){
+            throw new UserNotFoundException("Usuário não encontrado.");
+        }
+    }
+
+    private void checkLpnaAlreadyRegistered(String lpna) throws LpnaAlreadyExistsException{
+        if(userRepository.existsByLpnaIdentifier(lpna)){
+            throw new LpnaAlreadyExistsException("Ja existe um usuario cadastrado usando esse indicativo LPNA: "+ lpna);
+        }
     }
 
 

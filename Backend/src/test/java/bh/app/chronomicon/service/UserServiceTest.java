@@ -2,10 +2,13 @@ package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
+import bh.app.chronomicon.exception.LpnaAlreadyExistsException;
+import bh.app.chronomicon.exception.UserNotFoundException;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.model.enums.Rank;
 import bh.app.chronomicon.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should List all active supervisors ordered by hierarchy")
     void findSupervisors() {
         createUser(Rank.CAPITAO, "AAAA", (short) 0, "Monkey Luffy", "Luffy",
@@ -69,6 +73,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should List all active users ordered by hierarchy")
     void findUsers() {
         createUser(Rank.CAPITAO, "AAAA", (short) 0, "Monkey Luffy", "Luffy",
@@ -91,6 +96,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should List all active instructors ordered by hierarchy")
     void findInstructors() {
         createUser(Rank.CAPITAO, "AAAA", (short) 0, "Monkey Luffy", "Luffy",
@@ -113,6 +119,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should List all active trainees ordered by hierarchy")
     void findTrainees() {
         createUser(Rank.CAPITAO, "AAAA", (short) 0, "Monkey Luffy", "Luffy",
@@ -136,6 +143,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should List all active ONLY operators ordered by hierarchy")
     void findOnlyOperators() {
         createUser(Rank.CAPITAO, "AAAA", (short) 0, "Monkey Luffy", "Luffy",
@@ -158,6 +166,7 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should find user passing ID as parameter")
     void findUserById() {
         UserEntity createdUser = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
@@ -167,19 +176,59 @@ class UserServiceTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("Should throw exception due to LPNA already registered")
     void createNewUserSameLPNA() {
-
+        createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
+                false, true, false);
+        CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, (short) 0, false, false, false);
+        assertThrows(LpnaAlreadyExistsException.class, ()->{
+            userService.createNewUser(userDTO);
+        } );
 
     }
 
     @Test
+    @Transactional
     @DisplayName("Should create user successfully")
     void createNewUserSuccess() {
+        CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, (short) 0, false, false, false);
+        UserDTO newUser= userService.createNewUser(userDTO);
+        assertEquals("Sasuke", newUser.service_name());
     }
 
     @Test
+    @Transactional
     @DisplayName("Should find user passing LPNA as parameter")
-    void findUserByLPNA() {
+    void findUserByLPNASuccess() {
+         createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
+                false, true, false);
+         UserDTO user = userService.findUserByLPNA("ZZZZ");
+        assertEquals("N. Uzumaki", user.service_name());
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Should return exception when searching user passing LPNA as parameter")
+    void findUserByLPNAFail() {
+        createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
+                false, true, false);
+
+        assertThrows(UserNotFoundException.class, ()->{
+            userService.findUserByLPNA("AAAA");
+        });
+    }
+
+    @Test
+    @Transactional
+
+    @DisplayName("Should return exception when searching user passing ID as parameter")
+    void findUserByIdFail() {
+        UserEntity user = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
+                false, true, false);
+
+        assertThrows(UserNotFoundException.class, ()->{
+            userService.findUserById(user.getId()+1);
+        });
     }
 }
