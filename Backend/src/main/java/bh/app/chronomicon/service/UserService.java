@@ -1,5 +1,6 @@
 package bh.app.chronomicon.service;
 
+import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
@@ -68,12 +69,19 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO createNewUser(UserDTO user) {
+    public UserDTO createNewUser(CreateUserDTO user) {
 
         checkLpnaAlreadyRegistered(user.lpna_identifier());
-        hierarchyDeconfliction(user.hierarchy());
+        List<UserEntity> usersFromRank = userRepository.getUsersOrderedByLowestHierarchyFromRank(user.rank ());
+        short userHierarchy;
+        if(usersFromRank.isEmpty ()){
+            userHierarchy = (short) 0;
+        }else{
+            userHierarchy = (short)(usersFromRank.get (0).getHierarchy () + (short)1);
+        }
+        hierarchyDeconfliction(userHierarchy);
 
-        UserEntity userEntity = new UserEntity(user);
+        UserEntity userEntity = new UserEntity(user, userHierarchy);
         userRepository.save(userEntity);
         return new UserDTO(userEntity);
     }

@@ -1,6 +1,7 @@
 package bh.app.chronomicon.controller;
 
 
+import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,7 +85,7 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Falha ao criar usuário"),
     })
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO user){
+    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserDTO user){
         UserDTO savedUser = service.createNewUser(user);
         URI location = URI.create(savedUser.lpna_identifier());
         return ResponseEntity.created(location).body(savedUser);

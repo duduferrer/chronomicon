@@ -1,5 +1,6 @@
 package bh.app.chronomicon.service;
 
+import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
@@ -182,7 +183,7 @@ class UserServiceTest {
     void createNewUserSameLPNA() {
         createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-        UserDTO userDTO = new UserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, (short) 0, false, false, false);
+        CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, false, false, false);
         assertThrows(ConflictException.class, ()->{
             userService.createNewUser(userDTO);
         } );
@@ -193,7 +194,7 @@ class UserServiceTest {
     @Transactional
     @DisplayName("Should create user successfully")
     void createNewUserSuccess() {
-        UserDTO userDTO = new UserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, (short) 0, false, false, false);
+        CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, false, false, false);
         UserDTO newUser= userService.createNewUser(userDTO);
         assertEquals("Sasuke", newUser.service_name());
     }
@@ -201,20 +202,19 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should shift already existing users hierarchy and create a new user")
-    void createNewUserSameHierarchy() {
-        UserDTO user1DTO = new UserDTO("ZZZZ", "Rock Lee", "Lee", Rank.CAPITAO, (short) 2, false, false, false);
-
-        UserDTO user0DTO = new UserDTO("AAAA", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, (short) 2, false, false, false);
-        userService.createNewUser(user1DTO);
+    void createNewUserSameRank() {
+        CreateUserDTO user0DTO = new CreateUserDTO("ZZZZ", "Rock Lee", "Lee", Rank.CAPITAO, false, false, false);
+        CreateUserDTO user1DTO = new CreateUserDTO("AAAA", "Sasuke Uchiha", "Sasuke", Rank.CAPITAO, false, false, false);
         userService.createNewUser(user0DTO);
+        userService.createNewUser(user1DTO);
         userRepository.flush();
         entityManager.clear();
-        UserDTO foundUser0 = userService.findUserByLPNA("AAAA");
-        UserDTO foundUser1 = userService.findUserByLPNA("ZZZZ");
+        UserDTO foundUser0 = userService.findUserByLPNA("ZZZZ");
+        UserDTO foundUser1 = userService.findUserByLPNA("AAAA");
 
 
-        assertEquals(2, foundUser0.hierarchy());
-        assertEquals(3, foundUser1.hierarchy());
+        assertEquals(0, foundUser0.hierarchy());
+        assertEquals(1, foundUser1.hierarchy());
 
     }
 
