@@ -30,6 +30,3 @@ Projeto para atualização do livro eletronico do APP-BH.
   - Shadcn (Facilita a crição de componentes menores)
   - Tailwind CSS (Facilita o uso e padronização do CSS)
   - Tauri (Cria um app desktop utilizando o front com react) -> Mais performatico que ElectronJS
-
-4 - Bibliotecas Backend:
-  - TBD
