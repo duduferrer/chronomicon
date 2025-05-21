@@ -5,9 +5,12 @@ import bh.app.chronomicon.dto.UpdateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
+import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +19,14 @@ import java.util.List;
 @Service
 public class UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
+
     @Autowired
     private UserRepository userRepository;
 
     public List<UserDTO> findSupervisors() {
+        log.info ("EXIBINDO LISTA DE SUPERVISORES");
         return userRepository.findSupsOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
@@ -28,6 +35,7 @@ public class UserService {
     }
 
     public List<UserDTO> findUsers() {
+        log.info ("EXIBINDO LISTA DE USUÁRIOS");
         return userRepository.findActiveUsersOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
@@ -36,6 +44,7 @@ public class UserService {
     }
 
     public List<UserDTO> findInstructors() {
+        log.info ("EXIBINDO LISTA DE INSTRUTORES");
         return userRepository.findInstsOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
@@ -44,6 +53,7 @@ public class UserService {
     }
 
     public List<UserDTO> findTrainees() {
+        log.info ("EXIBINDO LISTA DE ESTAGIÁRIOS");
         return userRepository.findTraineesOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
@@ -52,6 +62,7 @@ public class UserService {
     }
 
     public List<UserDTO> findOnlyOperators() {
+        log.info ("EXIBINDO LISTA DE OPERADORES");
         return userRepository.findOnlyOpsOrderByHierarchy()
                 .stream()
                 .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
@@ -60,11 +71,13 @@ public class UserService {
     }
 
     public UserDTO findUserById(Long id) {
-        UserEntity user = userRepository.findUserById(id);
         try{
+            UserEntity user = userRepository.findUserById(id);
+            log.info ("EXIBINDO OPERADOR DE ID: {}",id);
             return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
         } catch (RuntimeException e) {
+            log.warn ("ERRO AO EXIBIR OPERADOR DE ID: {}",id);
             throw new NotFoundException("Usuário não encontrado.");
         }
     }
@@ -83,18 +96,26 @@ public class UserService {
         hierarchyDeconfliction(userHierarchy);
 
         UserEntity userEntity = new UserEntity(user, userHierarchy);
-        userRepository.save(userEntity);
+        try{
+            userRepository.save(userEntity);
+        }catch(RuntimeException e){
+            log.error ("ERRO AO CRIAR USUÁRIO: {}",user, e);
+            throw new ServerException ("Erro ao Salvar usuário.");
+        }
+        log.info ("USUÁRIO CRIADO COM SUCESSO: {}", user.lpna_identifier ());
         return new UserDTO(userEntity);
     }
 
     public UserDTO findUserByLPNA(String lpna){
         UserEntity user = findUser(lpna);
+        log.info ("EXIBIDO USUÁRIO: {}", lpna);
         return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
     }
 
     private void checkLpnaAlreadyRegistered(String lpna) throws ConflictException {
         if(userRepository.existsByLpnaIdentifier(lpna)){
+            log.warn ("LPNA {} CONSTA COMO JÁ CADASTRADA", lpna);
             throw new ConflictException("Ja existe um usuario cadastrado usando esse indicativo LPNA: "+ lpna);
         }
     }
@@ -107,11 +128,13 @@ public class UserService {
     private void shiftActiveUsersHierarchy(short hierarchy){
         userRepository.shiftActiveUsersHierarchy(hierarchy);
         userRepository.flush();
+        log.info ("HIERARQUIA ATUALIZADA DEVIDO: {}", hierarchy);
     }
 
     private void shiftInactiveUsersHierarchy(short hierarchy){
         userRepository.shiftInactiveUsersHierarchy(hierarchy);
         userRepository.flush();
+        log.info ("HIERARQUIA ATUALIZADA DEVIDO: {}", hierarchy);
     }
 
     private void hierarchyDeconfliction(short hierarchy){
@@ -126,6 +149,7 @@ public class UserService {
     private UserEntity findUser(String lpna){
         UserEntity user = userRepository.findUserByLPNA(lpna);
         if(user==null){
+            log.info ("USUÁRIO {} PROCURADO E NAO ENCONTRADO", lpna);
             throw new NotFoundException("Usuário com LPNA:"+ lpna +"não encontrado.");
         }else{
             return user;
@@ -136,6 +160,7 @@ public class UserService {
     public void activateUser(String lpna){
         UserEntity user = findUser(lpna);
         if(user.isActive()){
+            log.warn ("TENTATIVA DE ATIVAR USUÁRIO {}", lpna);
             throw new ConflictException("Usuário já está ativo. Apenas usuários inativos podem ser ativados.");
         }
         List<UserEntity> usersFromRank = userRepository.getUsersOrderedByLowestHierarchyFromRank(user.getRank());
@@ -149,7 +174,13 @@ public class UserService {
         userRepository.flush();
         userRepository.updateUserHierarchy(reactivatedUserHierarchy, lpna);
         userRepository.flush();
-        userRepository.activateUser(lpna);
+        try{
+            userRepository.activateUser(lpna);
+            log.info ("USUÁRIO {} ATIVADO COM SUCESSO", lpna);
+        }catch(RuntimeException e){
+            log.error ("TENTATIVA DE ATIVAÇAO USUÁRIO {}", lpna, e);
+            throw new ServerException ("HOUVE UM ERRO AO ATIVAR USUÁRIO");
+        }
 
     }
 
@@ -157,14 +188,20 @@ public class UserService {
     public void deactivateUser(String lpna){
         UserEntity user = findUser(lpna);
         if(!user.isActive()){
+            log.warn ("TENTATIVA DE DESATIVAR USUÁRIO {}", lpna);
             throw new ConflictException("Usuário já está inativo. Apenas usuários ativos podem ser desativados.");
         }
         hierarchyDeconfliction((short) 1001);
         userRepository.flush();
         userRepository.updateUserHierarchy((short) 1001, lpna);
         userRepository.flush();
-        userRepository.deactivateUser(lpna);
-
+        try{
+            userRepository.deactivateUser(lpna);
+            log.info ("USUÁRIO {} DESATIVADO COM SUCESSO", lpna);
+        }catch(RuntimeException e){
+            log.error ("TENTATIVA DE DESATIVAR USUÁRIO {}", lpna, e);
+            throw new ServerException ("HOUVE UM ERRO AO DESATIVAR USUÁRIO");
+        }
     }
 
     @Transactional
@@ -191,7 +228,13 @@ public class UserService {
         if(updateDto.lpna_identifier ()!=null){
             user.setLpna_identifier (updateDto.lpna_identifier ());
         }
-        userRepository.save (user);
+        try{
+            userRepository.save (user);
+
+        } catch (RuntimeException e) {
+            log.error ("Erro ao atualizar usuário: {}. Com os dados: {}", lpna, updateDto, e);
+            throw new ServerException ("Erro ao atualizar usuário.");
+        }
 
 
     }
