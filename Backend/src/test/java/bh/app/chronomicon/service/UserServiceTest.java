@@ -1,6 +1,7 @@
 package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
+import bh.app.chronomicon.dto.UpdateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
@@ -390,5 +391,21 @@ class UserServiceTest {
         short hierarchy = user.getHierarchy();
         assertTrue(userStatus);
         assertEquals(0, hierarchy);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Should update user with provided data and don't change unprovided data")
+    void updateUser() {
+        createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Tanjiro Kamado", "Tanjiro",
+                true, true, false, true);
+        UpdateUserDTO updateDto = new UpdateUserDTO ("GGGG", null, null, "Kamado",
+                null, null,null);
+        userService.updateUser ("AAAA", updateDto);
+        userRepository.flush ();
+        entityManager.clear ();
+        UserDTO user = userService.findUserByLPNA ("GGGG");
+        assertEquals ("Kamado", user.service_name ());
+        assertEquals (Rank.SUBOFICIAL, user.rank ());
     }
 }

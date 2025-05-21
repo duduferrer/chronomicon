@@ -1,6 +1,7 @@
 package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
+import bh.app.chronomicon.dto.UpdateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
@@ -163,6 +164,35 @@ public class UserService {
         userRepository.updateUserHierarchy((short) 1001, lpna);
         userRepository.flush();
         userRepository.deactivateUser(lpna);
+
+    }
+
+    @Transactional
+    public void updateUser(String lpna, UpdateUserDTO updateDto){
+        UserEntity user = findUser (lpna);
+        if(updateDto.supervisor ()!=null){
+            user.setSupervisor (updateDto.supervisor ());
+        }
+        if(updateDto.service_name ()!=null){
+            user.setService_name (updateDto.service_name ());
+        }
+        if(updateDto.full_name ()!=null){
+            user.setFull_name (updateDto.full_name ());
+        }
+        if(updateDto.trainee ()!=null){
+            user.setTrainee (updateDto.trainee ());
+        }
+        if(updateDto.instructor ()!=null){
+            user.setInstructor (updateDto.instructor ());
+        }
+        if(updateDto.rank ()!=null){
+            user.setRank (updateDto.rank ());
+        }
+        if(updateDto.lpna_identifier ()!=null){
+            user.setLpna_identifier (updateDto.lpna_identifier ());
+        }
+        userRepository.save (user);
+
 
     }
 

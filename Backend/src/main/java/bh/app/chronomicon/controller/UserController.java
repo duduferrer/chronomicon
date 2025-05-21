@@ -2,6 +2,7 @@ package bh.app.chronomicon.controller;
 
 
 import bh.app.chronomicon.dto.CreateUserDTO;
+import bh.app.chronomicon.dto.UpdateUserDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -113,6 +114,17 @@ public class UserController {
         }else{
             service.deactivateUser (lpna);
         }
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Atualiza Usuario", description = "Recebe alguns campos com novos dados e pode atualizar usuarios no BD")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Atualiza dados do usuário"),
+            @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
+    })
+    @PatchMapping(value = {"/{lpna}"})
+    public ResponseEntity<Void> updateUserStatus(@PathVariable String lpna, @RequestBody UpdateUserDTO user){
+        service.updateUser (lpna, user);
         return ResponseEntity.noContent().build();
     }
 }
