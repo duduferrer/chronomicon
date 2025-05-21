@@ -1,0 +1,36 @@
+<configuration>
+
+    <!-- Define o formato e local do log -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
+
+        <!-- Estratégia de rotação -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Arquivo novo todo dia -->
+            <fileNamePattern>logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- Retenção: últimos 90 dias -->
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log no console (opcional) -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%cyan(%d{HH:mm:ss}) %highlight(%-5level) [%logger{36}]: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Nível de log global -->
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- Log específico para seu pacote -->
+    <logger name="bh.app.chronomicon" level="DEBUG" />
+
+</configuration>

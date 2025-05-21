@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponseDTO> handleLpnaAlreadyExistsException(ConflictException exception){
+    public ResponseEntity<ErrorResponseDTO> handleConflicException(ConflictException exception){
         ErrorResponseDTO response = new ErrorResponseDTO(
                 HttpStatus.CONFLICT.value(),
                 exception.getMessage(),
@@ -20,10 +20,21 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
+
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(NotFoundException exception){
+    public ResponseEntity<ErrorResponseDTO> handleNotFoundException(NotFoundException exception){
         ErrorResponseDTO response = new ErrorResponseDTO(
                 HttpStatus.NO_CONTENT.value(),
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    @ExceptionHandler(ServerException.class)
+    public ResponseEntity<ErrorResponseDTO> handleServerException(ServerException exception){
+        ErrorResponseDTO response = new ErrorResponseDTO(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 exception.getMessage(),
                 LocalDateTime.now()
         );
