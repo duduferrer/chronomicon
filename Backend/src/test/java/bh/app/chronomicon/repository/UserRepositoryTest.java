@@ -185,4 +185,126 @@ class UserRepositoryTest {
         UserEntity result = repository.findUserByLPNA(userLPNA);
         assertEquals("Butters", result.getService_name());
     }
+
+    @Test
+    @DisplayName("Search if there is already a user created with this Hierarchy and return true")
+    void existsByHierarchySuccess() {
+        UserEntity user = createUser(Rank.TERCEIRO_SGT, "AAAA", (short) 0, "Bruce Wayne", "Wayne",
+                true, true, true, true);
+
+        boolean result = repository.existsByHierarchy(user.getHierarchy());
+        assertTrue(result);
+    }
+    @Test
+    @DisplayName("Search if there is already a user created with this Hierarchy and return false")
+    void existsByHierarchyFail() {
+        UserEntity user = createUser(Rank.SEGUNDO_SGT,  "BBBB", (short) 1, "Clark Kent", "Kent",
+                true, false, true);
+        boolean result = repository.existsByHierarchy((short)0);
+        assertFalse(result);
+    }
+
+    @Test
+    @DisplayName("Shift hierarchy of all users between target and 999")
+    void shiftActiveUsersHierarchy() {
+        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true);
+        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
+                true, false, true);
+        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 3, "Barry Allen", "Flash",
+                true, false, true);
+        UserEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1000, "Chapolin Colorado", "Chapolin Colorado",
+                true, false, true);
+        repository.shiftActiveUsersHierarchy(user2.getHierarchy());
+        entityManager.flush();
+        entityManager.clear();
+        List<UserEntity> users = repository.findActiveUsersOrderByHierarchy();
+        assertEquals(1, users.get(0).getHierarchy());
+        assertEquals(3, users.get(1).getHierarchy());
+        assertEquals(4, users.get(2).getHierarchy());
+        assertEquals(1000, users.get(3).getHierarchy());
+    }
+
+    @Test
+    @DisplayName("Shift hierarchy of all users between target and over 1000")
+    void shiftInactiveUsersHierarchy() {
+        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true);
+        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 1001, "John Stewart", "Lanterna Verde",
+                true, false, true);
+        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 1002, "Barry Allen", "Flash",
+                true, false, true);
+        UserEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1003, "Chapolin Colorado", "Chapolin Colorado",
+                true, false, true);
+        repository.shiftInactiveUsersHierarchy(user2.getHierarchy());
+        entityManager.flush();
+        entityManager.clear();
+
+        List<UserEntity> users = repository.findActiveUsersOrderByHierarchy();
+        assertEquals(1, users.get(0).getHierarchy());
+        assertEquals(1002, users.get(1).getHierarchy());
+        assertEquals(1003, users.get(2).getHierarchy());
+        assertEquals(1004, users.get(3).getHierarchy());
+    }
+
+
+    @Test
+    @DisplayName("Should activate an inactive user")
+    void activateUser() {
+        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true, false);
+        repository.activateUser(user.getLpna_identifier());
+        entityManager.flush();
+        entityManager.clear();
+        boolean userStatus = repository.findUserByLPNA(user.getLpna_identifier()).isActive();
+        assertTrue(userStatus);
+    }
+
+    @Test
+    @DisplayName("Should deactivate an active user")
+    void deactivateUser() {
+        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+            true, false, true, true);
+        repository.deactivateUser(user.getLpna_identifier());
+        entityManager.flush();
+        entityManager.clear();
+        boolean userStatus = repository.findUserByLPNA(user.getLpna_identifier()).isActive();
+        assertFalse(userStatus);
+
+    }
+
+    @Test
+    @DisplayName("Should update user hierarchy searching by LPNA identifier")
+    void updateUserHierarchy() {
+        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true, false);
+        repository.updateUserHierarchy((short)7, "AAAA");
+        entityManager.flush();
+        entityManager.clear();
+        short userHierarchy = repository.findUserByLPNA(user.getLpna_identifier()).getHierarchy();
+        assertEquals(7, userHierarchy);
+    }
+
+    @Test
+    @DisplayName("Should get a list of users from same rank, ordered by hierarchy")
+    void getUsersOrderedByLowestHierarchyFromRank(){
+        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+                true, false, true);
+        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
+                true, false, true);
+        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 4, "Barry Allen", "Flash",
+                true, false, true);
+        UserEntity user4 = createUser(Rank.TERCEIRO_SGT,  "DDDD", (short) 3, "Chapolin Colorado", "Chapolin Colorado",
+                true, false, true);
+        UserEntity user5 = createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 5, "Wolverine", "Vo Verine",
+                true, false, true, false);
+        entityManager.flush();
+        entityManager.clear();
+        List<UserEntity> userList = repository.getUsersOrderedByLowestHierarchyFromRank(Rank.TERCEIRO_SGT);
+        assertEquals("Flash", userList.get(0).getService_name());
+        assertEquals("Chapolin Colorado", userList.get(1).getService_name());
+        assertEquals("Lanterna Verde", userList.get(2).getService_name());
+    }
+
+
 }

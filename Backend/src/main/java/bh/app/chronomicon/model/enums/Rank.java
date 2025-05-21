@@ -1,5 +1,8 @@
 package bh.app.chronomicon.model.enums;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Posto/Graduação do usuário")
 public enum Rank {
     SUBOFICIAL("SO",14),
     PRIMEIRO_SGT("1S",13),

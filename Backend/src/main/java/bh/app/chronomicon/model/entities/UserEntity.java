@@ -1,9 +1,9 @@
 package bh.app.chronomicon.model.entities;
 
+import bh.app.chronomicon.dto.CreateUserDTO;
+import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.model.enums.Rank;
 import jakarta.persistence.*;
-
-import java.util.Optional;
 
 @Entity
 @Table(name = "tb_staff")
@@ -22,10 +22,33 @@ public class UserEntity {
     private boolean supervisor;
     private boolean instructor;
     private boolean trainee;
-    private boolean activeUser = true;
+    private boolean isActive = true;
 
 
     public UserEntity() {
+    }
+
+    public UserEntity(CreateUserDTO userDTO, short hierarchy){
+        this.rank = userDTO.rank();
+        this.lpna_identifier = userDTO.lpna_identifier();
+        this.hierarchy = hierarchy;
+        this.full_name = userDTO.full_name();
+        this.service_name = userDTO.service_name();
+        this.supervisor = userDTO.supervisor();
+        this.instructor = userDTO.instructor();
+        this.trainee = userDTO.trainee();
+    }
+
+    public UserEntity(UserDTO userDTO){
+        this.rank = userDTO.rank();
+        this.lpna_identifier = userDTO.lpna_identifier();
+        this.hierarchy = userDTO.hierarchy();
+        this.full_name = userDTO.full_name();
+        this.service_name = userDTO.service_name();
+        this.supervisor = userDTO.supervisor();
+        this.instructor = userDTO.instructor();
+        this.trainee = userDTO.trainee();
+
     }
 
     public UserEntity(Rank rank, long id, String lpna_identifier, short hierarchy, String full_name, String service_name,
@@ -39,10 +62,10 @@ public class UserEntity {
         this.supervisor = supervisor;
         this.instructor = instructor;
         this.trainee = trainee;
-        this.activeUser = true;
+        this.isActive = true;
     }
     public UserEntity(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
-                      boolean supervisor, boolean instructor, boolean trainee, Boolean activeUser) {
+                      boolean supervisor, boolean instructor, boolean trainee, Boolean isActive) {
         this.rank = rank;
         this.lpna_identifier = lpna_identifier;
         this.hierarchy = hierarchy;
@@ -51,7 +74,7 @@ public class UserEntity {
         this.supervisor = supervisor;
         this.instructor = instructor;
         this.trainee = trainee;
-        this.activeUser = activeUser != null ? activeUser : true;
+        this.isActive = isActive != null ? isActive : true;
     }
 
     public Rank getRank() {
@@ -121,11 +144,11 @@ public class UserEntity {
     public void setTrainee(boolean trainee) {
         this.trainee = trainee;
     }
-    public boolean isActiveUser() {
-        return activeUser;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setActiveUser(boolean activeUser) {
-        this.activeUser = activeUser;
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 }
