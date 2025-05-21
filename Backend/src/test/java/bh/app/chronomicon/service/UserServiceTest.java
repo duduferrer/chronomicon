@@ -310,7 +310,7 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should return exception when trying to activate an active user")
-    void activateUserException() {
+    void activateUserAlreadyActive() {
         createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
                 true, true, false);
         createUser(Rank.PRIMEIRO_SGT,  "BBBB", (short) 1, "Vegeta", "Vegeta",
@@ -333,8 +333,8 @@ class UserServiceTest {
 
     @Test
     @Transactional
-    @DisplayName("Should return exception when trying to deactivate an inactive user")
-    void deactivateUserException() {
+    @DisplayName("Should return exception when trying to activate inexistent user")
+    void activateUserExceptionUserNotFound() {
         createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
                 true, true, false);
         createUser(Rank.PRIMEIRO_SGT,  "BBBB", (short) 1, "Vegeta", "Vegeta",
@@ -349,8 +349,46 @@ class UserServiceTest {
                 true, true, true, false);
         createUser(Rank.SUBOFICIAL,  "GGGG", (short) 1002, "Mestre Kame", "Mestre Kame",
                 true, true, true, false);
-        assertThrows(ConflictException.class, ()->{
-            userService.deactivateUser("GGGG");
+        assertThrows(NotFoundException.class, ()->{
+            userService.activateUser("ZZZZ");
         });
+
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("Should return exception when trying to deactivate inexistent user")
+    void deactivateUserExceptionUserNotFound() {
+        createUser (Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
+                true, true, false);
+        createUser (Rank.PRIMEIRO_SGT, "BBBB", (short) 1, "Vegeta", "Vegeta",
+                false, true, true);
+        createUser (Rank.SEGUNDO_SGT, "CCCC", (short) 2, "Picclo", "Piccolo",
+                true, true, true);
+        createUser (Rank.SEGUNDO_SGT, "DDDD", (short) 3, "Kuririn", "Kuririn",
+                true, false, true);
+        createUser (Rank.TERCEIRO_SGT, "EEEE", (short) 4, "Son Gohan", "Gohan",
+                true, true, true);
+        createUser (Rank.SEGUNDO_SGT, "FFFF", (short) 1001, "Yamcha", "Yamcha",
+                true, true, true, false);
+        createUser (Rank.SUBOFICIAL, "GGGG", (short) 1002, "Mestre Kame", "Mestre Kame",
+                true, true, true, false);
+        assertThrows (NotFoundException.class, () -> {
+            userService.deactivateUser ("ZZZZ");
+        });
+    }
+    @Test
+    @Transactional
+    @DisplayName("Should activate an inactive user when user list is empty")
+    void activateUserWhenListIsEmpty() {
+        createUser(Rank.SUBOFICIAL, "AAAA", (short) 1005, "Son Goku", "Goku",
+                true, true, false, false);
+        userService.activateUser("AAAA");
+        entityManager.clear();
+        UserEntity user = userRepository.findUserByLPNA("AAAA");
+        boolean userStatus = user.isActive();
+        short hierarchy = user.getHierarchy();
+        assertTrue(userStatus);
+        assertEquals(0, hierarchy);
     }
 }

@@ -79,13 +79,9 @@ public class UserService {
     }
 
     public UserDTO findUserByLPNA(String lpna){
-        UserEntity user = userRepository.findUserByLPNA(lpna);
-        try{
-            return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+        UserEntity user = findUser(lpna);
+        return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
-        }catch (RuntimeException e){
-            throw new NotFoundException("Usuário não encontrado.");
-        }
     }
 
     private void checkLpnaAlreadyRegistered(String lpna) throws ConflictException {
@@ -118,13 +114,28 @@ public class UserService {
 
     }
 
+    private UserEntity findUser(String lpna){
+        UserEntity user = userRepository.findUserByLPNA(lpna);
+        if(user==null){
+            throw new NotFoundException("Usuário com LPNA:"+ lpna +"não encontrado.");
+        }else{
+            return user;
+        }
+    }
+
     @Transactional
     public void activateUser(String lpna){
-        UserEntity user = userRepository.findUserByLPNA(lpna);
+        UserEntity user = findUser(lpna);
         if(user.isActive()){
             throw new ConflictException("Usuário já está ativo. Apenas usuários inativos podem ser ativados.");
         }
-        short reactivatedUserHierarchy =(short)(userRepository.getUsersOrderedByLowestHierarchyFromRank(user.getRank()).get(0).getHierarchy() + 1);
+        List<UserEntity> usersFromRank = userRepository.getUsersOrderedByLowestHierarchyFromRank(user.getRank());
+        short reactivatedUserHierarchy;
+        if(usersFromRank.isEmpty ()){
+            reactivatedUserHierarchy = (short) 0;
+        }else{
+            reactivatedUserHierarchy = (short)(usersFromRank.get (0).getHierarchy () + (short)1);
+        }
         hierarchyDeconfliction(reactivatedUserHierarchy);
         userRepository.flush();
         userRepository.updateUserHierarchy(reactivatedUserHierarchy, lpna);
@@ -135,7 +146,7 @@ public class UserService {
 
     @Transactional
     public void deactivateUser(String lpna){
-        UserEntity user = userRepository.findUserByLPNA(lpna);
+        UserEntity user = findUser(lpna);
         if(!user.isActive()){
             throw new ConflictException("Usuário já está inativo. Apenas usuários ativos podem ser desativados.");
         }
