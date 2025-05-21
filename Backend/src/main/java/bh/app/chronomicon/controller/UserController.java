@@ -99,4 +99,19 @@ public class UserController {
     public UserDTO findByLPNA(@PathVariable String lpna){
         return service.findUserByLPNA(lpna);
     }
+
+    @Operation(summary = "Atualiza Status ativo/inativo", description = "Muda o status ativo ou inativo de um usuário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Atualiza o status ativo do usuário de acordo com parametro da url"),
+            @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
+    })
+    @PutMapping(value = {"/{lpna}/status"})
+    public ResponseEntity<Void> updateUserStatus(@PathVariable String lpna, @RequestParam boolean active){
+        if(active){
+            service.activateUser (lpna);
+        }else{
+            service.deactivateUser (lpna);
+        }
+        return ResponseEntity.noContent().build();
+    }
 }
