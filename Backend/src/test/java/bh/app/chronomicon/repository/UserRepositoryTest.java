@@ -296,12 +296,14 @@ class UserRepositoryTest {
                 true, false, true);
         UserEntity user4 = createUser(Rank.TERCEIRO_SGT,  "DDDD", (short) 3, "Chapolin Colorado", "Chapolin Colorado",
                 true, false, true);
+        UserEntity user5 = createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 5, "Wolverine", "Vo Verine",
+                true, false, true, false);
         entityManager.flush();
         entityManager.clear();
         List<UserEntity> userList = repository.getUsersOrderedByLowestHierarchyFromRank(Rank.TERCEIRO_SGT);
-        assertEquals("Lanterna Verde", userList.get(0).getService_name());
-        assertEquals("Chapolin", userList.get(1).getService_name());
-        assertEquals("Flash", userList.get(2).getService_name());
+        assertEquals("Flash", userList.get(0).getService_name());
+        assertEquals("Chapolin Colorado", userList.get(1).getService_name());
+        assertEquals("Lanterna Verde", userList.get(2).getService_name());
     }
 
 
