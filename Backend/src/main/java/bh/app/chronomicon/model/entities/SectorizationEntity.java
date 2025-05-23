@@ -4,6 +4,8 @@ package bh.app.chronomicon.model.entities;
 import bh.app.chronomicon.model.enums.Sector;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.List;
 
 @Entity
@@ -11,122 +13,145 @@ import java.util.List;
 public class SectorizationEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-    @OneToOne
-    @JoinColumn(name = "control_1_id")
-    private OperatorEntity control_1;
+    @ManyToOne
+    @JoinColumn(name="shift_id")
+    private ShiftEntity shift;
+    private Sector sectors;
+    private int console;
+    private ATCOEntity ctr;
+    private ATCOEntity ass;
+    private ATCOEntity ctr_trainee;
+    private ATCOEntity ass_trainee;
+    private Timestamp start_time;
+    private Timestamp end_time;
 
-    @OneToOne
-    @JoinColumn(name = "assistant_1_id")
-    private OperatorEntity assistant_1;
+    public SectorizationEntity(String id, ShiftEntity shift, Sector sectors, int console, ATCOEntity ctr, ATCOEntity ass, ATCOEntity ctr_trainee, ATCOEntity ass_trainee, Timestamp start_time, Timestamp end_time) {
+        this.id = id;
+        this.shift = shift;
+        this.sectors = sectors;
+        this.console = console;
+        this.ctr = ctr;
+        this.ass = ass;
+        this.ctr_trainee = ctr_trainee;
+        this.ass_trainee = ass_trainee;
+        this.start_time = start_time;
+        this.end_time = end_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_1_id")
-    private OperatorEntity instructor_1;
+    public SectorizationEntity() {
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_1_id")
-    private TraineeEntity trainee_1;
-    private Sector  sector_1;
+    public Timestamp getEnd_time() {
+        return end_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_2_id")
-    private OperatorEntity control_2;
+    public void setEnd_time(Timestamp end_time) {
+        this.end_time = end_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_2_id")
-    private OperatorEntity assistant_2;
+    public Timestamp getStart_time() {
+        return start_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_2_id")
-    private OperatorEntity instructor_2;
+    public void setStart_time(Timestamp start_time) {
+        this.start_time = start_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_2_id")
-    private TraineeEntity trainee_2;
-    private Sector  sector_2;
+    public ATCOEntity getAss_trainee() {
+        return ass_trainee;
+    }
 
+    public void setAss_trainee(ATCOEntity ass_trainee) {
+        this.ass_trainee = ass_trainee;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_3_id")
-    private OperatorEntity control_3;
+    public ATCOEntity getCtr_trainee() {
+        return ctr_trainee;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_3_id")
-    private OperatorEntity assistant_3;
+    public void setCtr_trainee(ATCOEntity ctr_trainee) {
+        this.ctr_trainee = ctr_trainee;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_3_id")
-    private OperatorEntity instructor_3;
+    public ATCOEntity getAss() {
+        return ass;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_3_id")
-    private TraineeEntity trainee_3;
-    private Sector  sector_3;
+    public void setAss(ATCOEntity ass) {
+        this.ass = ass;
+    }
 
+    public ATCOEntity getCtr() {
+        return ctr;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_4_id")
-    private OperatorEntity control_4;
+    public void setCtr(ATCOEntity ctr) {
+        this.ctr = ctr;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_4_id")
-    private OperatorEntity assistant_4;
+    public int getConsole() {
+        return console;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_4_id")
-    private OperatorEntity instructor_4;
+    public void setConsole(int console) {
+        this.console = console;
+    }
+    public Sector getSectors() {
+        return sectors;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_4_id")
-    private TraineeEntity trainee_4;
-    private Sector  sector_4;
+    public void setSectors(Sector sectors) {
+        this.sectors = sectors;
+    }
 
+    public ShiftEntity getShift() {
+        return shift;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_5_id")
-    private OperatorEntity control_5;
+    public void setShift(ShiftEntity shift) {
+        this.shift = shift;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_5_id")
-    private OperatorEntity assistant_5;
+    public String getId() {
+        return id;
+    }
+    public Duration getDuration(){
+        return Duration.between (start_time.toLocalDateTime (), end_time.toLocalDateTime ());
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_5_id")
-    private OperatorEntity instructor_5;
-
-    @OneToOne
-    @JoinColumn(name = "trainee_5_id")
-    private TraineeEntity trainee_5;
-    private Sector  sector_5;
-
-
-    @OneToOne
-    @JoinColumn(name = "control_6_id")
-    private OperatorEntity control_6;
-
-    @OneToOne
-    @JoinColumn(name = "assistant_6_id")
-    private OperatorEntity assistant_6;
-
-    @OneToOne
-    @JoinColumn(name = "instructor_6_id")
-    private OperatorEntity instructor_6;
-
-    @OneToOne
-    @JoinColumn(name = "trainee_6_id")
-    private TraineeEntity trainee_6;
-    private Sector  sector_6;
-
-    @OneToMany
-    @JoinColumn(name = "supervisors_id")
-    private List<SupervisorEntity> supervisor;
-
-    @OneToMany
-    @JoinColumn(name = "coordinator_id")
-    private List<OperatorEntity> coordinator;
-
-
+    @Override
+    public String toString() {
+        if(console==0){
+            return "Coordenador: " + ctr +
+                    ", Inicio: " + start_time.toLocalDateTime ()+
+                    ", Fim: " + end_time.toLocalDateTime ();
+        } else if (ctr_trainee != null) {
+            return  "Setores: " + sectors +
+                    ", Console " + console +
+                    ", Controle: " + ctr +
+                    ", Assistente: " + ass +
+                    ", Estagiario CTR" + ctr_trainee +
+                    ", Inicio: " + start_time.toLocalDateTime ()+
+                    ", Fim: " + end_time.toLocalDateTime ();
+        } else if (ass_trainee != null) {
+            return "Setores: " + sectors +
+                    ", Console " + console +
+                    ", Controle: " + ctr +
+                    ", Assistente: " + ass +
+                    ", Estagiario ASS" + ass_trainee +
+                    ", Inicio: " + start_time.toLocalDateTime () +
+                    ", Fim: " + end_time.toLocalDateTime ();
+        }
+        else{
+            return  "Setores: " + sectors +
+                    ", Console " + console +
+                    ", Controle: " + ctr +
+                    ", Assistente: " + ass +
+                    ", Inicio: " + start_time.toLocalDateTime ()+
+                    ", Fim: " + end_time.toLocalDateTime ();
+        }
+    }
 }

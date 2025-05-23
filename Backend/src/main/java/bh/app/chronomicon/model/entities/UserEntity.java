@@ -5,6 +5,8 @@ import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.model.enums.Rank;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
+
 @Entity
 @Table(name = "tb_staff")
 public class UserEntity {
@@ -23,9 +25,26 @@ public class UserEntity {
     private boolean instructor;
     private boolean trainee;
     private boolean isActive = true;
+    private Timestamp created_at;
+    private Timestamp updated_at;
 
 
     public UserEntity() {
+    }
+
+    public UserEntity(long id, String lpna_identifier, short hierarchy, String full_name, Rank rank, String service_name, boolean supervisor, boolean instructor, boolean trainee, boolean isActive, Timestamp created_at, Timestamp updated_at) {
+        this.id = id;
+        this.lpna_identifier = lpna_identifier;
+        this.hierarchy = hierarchy;
+        this.full_name = full_name;
+        this.rank = rank;
+        this.service_name = service_name;
+        this.supervisor = supervisor;
+        this.instructor = instructor;
+        this.trainee = trainee;
+        this.isActive = isActive;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     public UserEntity(CreateUserDTO userDTO, short hierarchy){
@@ -150,5 +169,21 @@ public class UserEntity {
 
     public void setActive(boolean active) {
         this.isActive = active;
+    }
+
+    public Timestamp getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(Timestamp created_at) {
+        this.created_at = created_at;
+    }
+
+    public Timestamp getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Timestamp updated_at) {
+        this.updated_at = updated_at;
     }
 }

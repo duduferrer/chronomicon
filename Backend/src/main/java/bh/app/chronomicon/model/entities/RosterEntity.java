@@ -12,24 +12,17 @@ import java.util.List;
 public class RosterEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-    @OneToMany
-    @JoinColumn(name = "supervisors_id")
+    @OneToMany(mappedBy = "roster")
     private List<SupervisorEntity> supervisors;
 
-    @OneToMany
-    @JoinColumn(name = "operators_id")
+    @OneToMany(mappedBy = "roster")
     private List<OperatorEntity> operators;
 
-    @OneToMany
-    @JoinColumn(name = "trainees_id")
+    @OneToMany(mappedBy = "roster")
     private List<TraineeEntity> trainees;
-
-    private int sectorization;
-    private LocalDate date;
-    private Shift shift;
 
 
 }

@@ -1,63 +1,30 @@
 package bh.app.chronomicon.model.entities;
 
+import bh.app.chronomicon.model.enums.UserShift;
 import jakarta.persistence.*;
 
 import java.time.Duration;
 
 @Entity
 @Table(name = "tb_shift_supervisors")
-public class SupervisorEntity {
+public class SupervisorEntity extends ATCOEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private boolean isInstructor = false;
 
-    @ManyToOne
-    @JoinColumn(name = "lpna_identifier")
-    private UserEntity operator;
 
-    private Duration workload;
-
-    @ManyToOne
-    @JoinColumn(name = "shift_id")
-    private RosterEntity shift;
-
-    public SupervisorEntity() {
+    public SupervisorEntity(String id, UserEntity user, Duration workload, RosterEntity roster, UserShift shift) {
+        super (id, user, workload, roster, shift);
     }
 
-    public SupervisorEntity(int id, UserEntity operator, Duration workload, RosterEntity shift) {
-        this.id = id;
-        this.operator = operator;
-        this.workload = workload;
-        this.shift = shift;
+    public SupervisorEntity(){
+        super();
     }
 
-    public int getId() {
-        return id;
+    public boolean isInstructor() {
+        return isInstructor;
     }
 
-
-    public UserEntity getOperator() {
-        return operator;
-    }
-
-    public void setOperator(UserEntity operator) {
-        this.operator = operator;
-    }
-
-    public Duration getWorkload() {
-        return workload;
-    }
-
-    public void setWorkload(Duration workload) {
-        this.workload = workload;
-    }
-
-    public RosterEntity getShift() {
-        return shift;
-    }
-
-    public void setShift(RosterEntity shift) {
-        this.shift = shift;
+    public void setInstructor(boolean instructor) {
+        isInstructor = instructor;
     }
 }
