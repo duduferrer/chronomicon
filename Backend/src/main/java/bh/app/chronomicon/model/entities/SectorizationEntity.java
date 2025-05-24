@@ -21,14 +21,16 @@ public class SectorizationEntity {
     private ShiftEntity shift;
     private Sector sectors;
     private int console;
-    private ATCOEntity ctr;
-    private ATCOEntity ass;
-    private ATCOEntity ctr_trainee;
-    private ATCOEntity ass_trainee;
+    private OperatorEntity ctr;
+    private OperatorEntity ass;
+    private OperatorEntity ctr_trainee;
+    private OperatorEntity ass_trainee;
     private Timestamp start_time;
     private Timestamp end_time;
 
-    public SectorizationEntity(String id, ShiftEntity shift, Sector sectors, int console, ATCOEntity ctr, ATCOEntity ass, ATCOEntity ctr_trainee, ATCOEntity ass_trainee, Timestamp start_time, Timestamp end_time) {
+    public SectorizationEntity(String id, ShiftEntity shift, Sector sectors, int console, OperatorEntity ctr,
+                               OperatorEntity ass, OperatorEntity ctr_trainee, OperatorEntity ass_trainee,
+                               Timestamp start_time, Timestamp end_time) {
         this.id = id;
         this.shift = shift;
         this.sectors = sectors;
@@ -60,35 +62,35 @@ public class SectorizationEntity {
         this.start_time = start_time;
     }
 
-    public ATCOEntity getAss_trainee() {
+    public OperatorEntity getAss_trainee() {
         return ass_trainee;
     }
 
-    public void setAss_trainee(ATCOEntity ass_trainee) {
+    public void setAss_trainee(OperatorEntity ass_trainee) {
         this.ass_trainee = ass_trainee;
     }
 
-    public ATCOEntity getCtr_trainee() {
+    public OperatorEntity getCtr_trainee() {
         return ctr_trainee;
     }
 
-    public void setCtr_trainee(ATCOEntity ctr_trainee) {
+    public void setCtr_trainee(OperatorEntity ctr_trainee) {
         this.ctr_trainee = ctr_trainee;
     }
 
-    public ATCOEntity getAss() {
+    public OperatorEntity getAss() {
         return ass;
     }
 
-    public void setAss(ATCOEntity ass) {
+    public void setAss(OperatorEntity ass) {
         this.ass = ass;
     }
 
-    public ATCOEntity getCtr() {
+    public OperatorEntity getCtr() {
         return ctr;
     }
 
-    public void setCtr(ATCOEntity ctr) {
+    public void setCtr(OperatorEntity ctr) {
         this.ctr = ctr;
     }
 

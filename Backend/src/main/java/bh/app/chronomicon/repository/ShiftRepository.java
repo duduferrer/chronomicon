@@ -1,4 +1,10 @@
 package bh.app.chronomicon.repository;
 
-public interface ShiftRepository {
+import bh.app.chronomicon.model.entities.ShiftEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ShiftRepository extends JpaRepository<ShiftEntity, Integer> {
+
 }
