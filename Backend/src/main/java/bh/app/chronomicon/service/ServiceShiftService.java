@@ -10,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class ServiceShiftService {
@@ -24,6 +27,7 @@ public class ServiceShiftService {
         shiftEntity.setShift (shift);
         shiftEntity.setDate (date);
         shiftEntity.setActive (true);
+        shiftEntity.setOpening_time (Timestamp.valueOf (LocalDateTime.now ()));
         try {
             shiftRepository.save (shiftEntity);
             log.info ("TURNO CRIADO: {}, {}", shift, date.toString ());

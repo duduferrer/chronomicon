@@ -72,7 +72,7 @@ public class OperatorEntity {
     }
 
     public void setWorkload(Duration workload) {
-        this.workload = workload;
+        this.workload = this.workload.plus (workload);
     }
 
     public ShiftType getOperator_shift() {

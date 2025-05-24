@@ -19,4 +19,8 @@ public class ShiftEventsEntity {
     EventType type;
     String details;
 
+    @Override
+    public String toString() {
+        return "ID: "+id+" detalhes: "+details;
+    }
 }
