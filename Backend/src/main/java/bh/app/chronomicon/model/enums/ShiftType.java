@@ -3,7 +3,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public enum Shift {
+public enum ShiftType {
     M("Manhã", LocalTime.of (6,15), LocalTime.of (13,30)),
     RM1("Ref Manhã 1", LocalTime.of (7,30), LocalTime.of (13,0)),
     RM2("Ref Manhã 2", LocalTime.of (8,0), LocalTime.of (13,0)),
@@ -25,7 +25,7 @@ public enum Shift {
     private final LocalTime startTime;
     private final LocalTime endTime;
 
-    Shift(String caption, LocalTime startTime, LocalTime endTime){
+    ShiftType(String caption, LocalTime startTime, LocalTime endTime){
         this.caption = caption;
         this.startTime = startTime;
         this.endTime = endTime;

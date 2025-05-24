@@ -4,8 +4,9 @@ import bh.app.chronomicon.dto.CreateOperatorDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.model.entities.OperatorEntity;
+import bh.app.chronomicon.model.entities.ServiceShiftEntity;
 import bh.app.chronomicon.model.entities.UserEntity;
-import bh.app.chronomicon.model.enums.Shift;
+import bh.app.chronomicon.model.enums.ShiftType;
 import bh.app.chronomicon.repository.OperatorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +25,21 @@ public class OperatorService {
     @Autowired
     UserService userService;
 
-    public CreateOperatorDTO createOperator(String lpna, Shift shift, boolean isSupervisor,
-                                            boolean isTrainee, boolean isInstructor){
+    public CreateOperatorDTO createOperator(String lpna, ShiftType op_shift, boolean isSupervisor,
+                                            boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift){
        UserDTO userDTO = userService.findUserByLPNA (lpna);
        UserEntity user = new UserEntity (userDTO);
 //       TODO: SE NAO TIVER SHIFT, CRIA UM, SE NAO TIVER ROSTER, CRIA UM.
 
        try {
-           OperatorEntity operator = new OperatorEntity (user, Duration.ZERO, shift, isSupervisor, isTrainee, isInstructor);
+           OperatorEntity operator = new OperatorEntity (user, Duration.ZERO, op_shift, isSupervisor,
+                   isTrainee, isInstructor, serviceShift);
            operatorRepository.save(operator);
-           log.info ("Operador {} criado com sucesso no turno {}", lpna, shift.getCaption ());
-           return new CreateOperatorDTO(userDTO, shift, operator.getId (), isSupervisor, isTrainee, isInstructor);
+           log.info ("Operador {} criado com sucesso no turno {}", lpna, serviceShift.getId ());
+           return new CreateOperatorDTO(userDTO, op_shift, operator.getId (), isSupervisor, isTrainee, isInstructor);
        }catch (RuntimeException e){
-           log.error ("Erro ao cadastrar {} no turno {}", lpna, shift.getCaption ());
-           throw new ServerException ("Erro ao cadastrar " + lpna + " no turno " + shift.getCaption ());
+           log.error ("Erro ao cadastrar {} no turno {}", lpna, serviceShift.getId ());
+           throw new ServerException ("Erro ao cadastrar " + lpna + " no turno " + serviceShift.getId ());
        }
 
     }

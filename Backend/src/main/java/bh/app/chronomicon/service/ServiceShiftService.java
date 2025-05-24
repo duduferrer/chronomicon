@@ -2,9 +2,9 @@ package bh.app.chronomicon.service;
 
 
 import bh.app.chronomicon.exception.ServerException;
-import bh.app.chronomicon.model.entities.ShiftEntity;
-import bh.app.chronomicon.model.enums.Shift;
-import bh.app.chronomicon.repository.ShiftRepository;
+import bh.app.chronomicon.model.entities.ServiceShiftEntity;
+import bh.app.chronomicon.model.enums.ShiftType;
+import bh.app.chronomicon.repository.ServiceShiftRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,16 +13,17 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 @Service
-public class ShiftService {
+public class ServiceShiftService {
     private static final Logger log = LoggerFactory.getLogger(OperatorService.class);
 
     @Autowired
-    ShiftRepository shiftRepository;
+    ServiceShiftRepository shiftRepository;
 
-    public ShiftEntity createShift(Shift shift, LocalDate date){
-        ShiftEntity shiftEntity = new ShiftEntity ();
+    public ServiceShiftEntity createShift(ShiftType shift, LocalDate date){
+        ServiceShiftEntity shiftEntity = new ServiceShiftEntity ();
         shiftEntity.setShift (shift);
         shiftEntity.setDate (date);
+        shiftEntity.setActive (true);
         try {
             shiftRepository.save (shiftEntity);
             log.info ("TURNO CRIADO: {}, {}", shift, date.toString ());

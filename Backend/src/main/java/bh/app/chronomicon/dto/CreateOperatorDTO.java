@@ -1,9 +1,9 @@
 package bh.app.chronomicon.dto;
 
-import bh.app.chronomicon.model.enums.Shift;
+import bh.app.chronomicon.model.enums.ShiftType;
 
 public record CreateOperatorDTO(UserDTO user,
-                                Shift shift,
+                                ShiftType shift,
                                 String id,
                                 boolean isSupervisor,
                                 boolean isTrainee,

@@ -1,6 +1,6 @@
 package bh.app.chronomicon.model.entities;
 
-import bh.app.chronomicon.model.enums.Shift;
+import bh.app.chronomicon.model.enums.ShiftType;
 import jakarta.persistence.*;
 
 import java.time.Duration;
@@ -17,45 +17,46 @@ public class OperatorEntity {
 
     private Duration workload;
 
-    private Shift operator_shift;
+    private ShiftType operator_shift;
     private boolean isSupervisor;
     private boolean isTrainee;
     private boolean isInstructor;
     @ManyToOne
     @JoinColumn(name = "shift_id")
-    private ShiftEntity shift;
+    private ServiceShiftEntity serviceShift;
 
 
-    public OperatorEntity(String id, UserEntity user, Duration workload, Shift shift,
+    public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift,
                           boolean isSupervisor, boolean isTrainee, boolean isInstructor) {
         this.id = id;
         this.user = user;
         this.workload = workload;
-        this.operator_shift = shift;
+        this.operator_shift = serviceShift;
         this.isSupervisor = isSupervisor;
         this.isTrainee = isTrainee;
         this.isInstructor = isInstructor;
     }
 
-    public OperatorEntity(String id, UserEntity user, Duration workload, Shift shift) {
+    public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift) {
         this.id = id;
         this.user = user;
         this.workload = workload;
-        this.operator_shift = shift;
+        this.operator_shift = serviceShift;
     }
 
     public OperatorEntity(){
 
     }
 
-    public OperatorEntity(UserEntity user, Duration workload, Shift shift, boolean isSupervisor,
-                          boolean isTrainee, boolean isInstructor) {
+    public OperatorEntity(UserEntity user, Duration workload, ShiftType shift, boolean isSupervisor,
+                          boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift) {
         this.user = user;
         this.workload = workload;
         this.operator_shift = shift;
         this.isSupervisor = isSupervisor;
         this.isTrainee = isTrainee;
         this.isInstructor = isInstructor;
+        this.serviceShift = serviceShift;
     }
 
     public UserEntity getUser() {
@@ -74,11 +75,11 @@ public class OperatorEntity {
         this.workload = workload;
     }
 
-    public Shift getOperator_shift() {
+    public ShiftType getOperator_shift() {
         return operator_shift;
     }
 
-    public void setOperator_shift(Shift operator_shift) {
+    public void setOperator_shift(ShiftType operator_shift) {
         this.operator_shift = operator_shift;
     }
 

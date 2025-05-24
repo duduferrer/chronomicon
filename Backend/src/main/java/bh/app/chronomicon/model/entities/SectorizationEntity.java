@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.List;
 
 @Entity
 @Table(name = "tb_sectorization")
@@ -18,7 +17,7 @@ public class SectorizationEntity {
 
     @ManyToOne
     @JoinColumn(name="shift_id")
-    private ShiftEntity shift;
+    private ServiceShiftEntity shift;
     private Sector sectors;
     private int console;
     private OperatorEntity ctr;
@@ -28,7 +27,7 @@ public class SectorizationEntity {
     private Timestamp start_time;
     private Timestamp end_time;
 
-    public SectorizationEntity(String id, ShiftEntity shift, Sector sectors, int console, OperatorEntity ctr,
+    public SectorizationEntity(String id, ServiceShiftEntity shift, Sector sectors, int console, OperatorEntity ctr,
                                OperatorEntity ass, OperatorEntity ctr_trainee, OperatorEntity ass_trainee,
                                Timestamp start_time, Timestamp end_time) {
         this.id = id;
@@ -109,11 +108,11 @@ public class SectorizationEntity {
         this.sectors = sectors;
     }
 
-    public ShiftEntity getShift() {
+    public ServiceShiftEntity getShift() {
         return shift;
     }
 
-    public void setShift(ShiftEntity shift) {
+    public void setShift(ServiceShiftEntity shift) {
         this.shift = shift;
     }
 

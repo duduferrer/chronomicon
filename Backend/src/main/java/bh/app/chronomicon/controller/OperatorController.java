@@ -2,7 +2,7 @@ package bh.app.chronomicon.controller;
 
 
 import bh.app.chronomicon.dto.CreateOperatorDTO;
-import bh.app.chronomicon.model.enums.Shift;
+import bh.app.chronomicon.model.enums.ShiftType;
 import bh.app.chronomicon.service.OperatorService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,7 +27,7 @@ public class OperatorController {
             @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado"),
             @ApiResponse(responseCode = "409", description = "Falha ao criar usuário"),
     })
-    public ResponseEntity<CreateOperatorDTO> createOperator(@PathVariable String lpna, @PathVariable Shift shift,
+    public ResponseEntity<CreateOperatorDTO> createOperator(@PathVariable String lpna, @PathVariable ShiftType shift,
                                                             @RequestParam(defaultValue = "false") boolean sup,
                                                             @RequestParam(defaultValue = "false") boolean est,
                                                             @RequestParam(defaultValue = "false") boolean inst){
