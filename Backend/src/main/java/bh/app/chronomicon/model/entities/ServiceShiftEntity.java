@@ -1,10 +1,10 @@
 package bh.app.chronomicon.model.entities;
 
 
+import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.model.enums.ShiftType;
-import bh.app.chronomicon.service.OperatorService;
 import jakarta.persistence.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,24 +24,32 @@ public class ServiceShiftEntity {
     private LocalDate date;
     private ShiftType shift;
     @OneToMany(mappedBy = "operator_shift")
-    private SectorizationEntity sectorization;
+    private List<SectorizationEntity> sectorization;
     @OneToMany(mappedBy = "operator_shift")
     private List<ShiftEventsEntity> events;
-    @OneToMany(mappedBy = "shift")
+    @OneToMany(mappedBy = "service_shift")
     private List<OperatorEntity> operators;
     private boolean isActive = true;
     private Timestamp opening_time;
     private Timestamp closing_time;
-    private UserEntity closed_by;
+    private String closed_by;
     private Timestamp update_after_closing;
+    private boolean isValid;
 
-    public ServiceShiftEntity(int id, LocalDate date, ShiftType shift, SectorizationEntity sectorization, List<ShiftEventsEntity> events, List<OperatorEntity> operators) {
+
+    public ServiceShiftEntity(int id, LocalDate date, ShiftType shift, List<SectorizationEntity> sectorization, List<ShiftEventsEntity> events, List<OperatorEntity> operators) {
         this.id = id;
         this.date = date;
         this.shift = shift;
         this.sectorization = sectorization;
         this.events = events;
         this.operators = operators;
+    }
+
+    @Override
+    public String toString() {
+        return  date.toString () + shift.getCaption ();
+
     }
 
     public ServiceShiftEntity() {
@@ -71,11 +79,11 @@ public class ServiceShiftEntity {
         this.shift = shift;
     }
 
-    public SectorizationEntity getSectorization() {
+    public List<SectorizationEntity> getSectorization() {
         return sectorization;
     }
 
-    public void setSectorization(SectorizationEntity sectorization) {
+    public void setSectorization(List<SectorizationEntity> sectorization) {
         this.sectorization = sectorization;
     }
 
@@ -138,11 +146,11 @@ public class ServiceShiftEntity {
         this.closing_time = closing_time;
     }
 
-    public UserEntity getClosed_by() {
+    public String getClosed_by() {
         return closed_by;
     }
 
-    public void setClosed_by(UserEntity closed_by) {
+    public void setClosed_by(String closed_by) {
         this.closed_by = closed_by;
     }
 
@@ -153,4 +161,14 @@ public class ServiceShiftEntity {
     public void setUpdate_after_closing(Timestamp update_after_closing) {
         this.update_after_closing = update_after_closing;
     }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean valid) {
+        isValid = valid;
+    }
+
+
 }

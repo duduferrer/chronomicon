@@ -2,7 +2,6 @@ package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UpdateUserDTO;
-import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.exception.ServerException;
@@ -25,56 +24,56 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<UserDTO> findSupervisors() {
+    public List<bh.app.chronomicon.dto.UserDTO> findSupervisors() {
         log.info ("EXIBINDO LISTA DE SUPERVISORES");
         return userRepository.findSupsOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                         .toList();
     }
 
-    public List<UserDTO> findUsers() {
+    public List<bh.app.chronomicon.dto.UserDTO> findUsers() {
         log.info ("EXIBINDO LISTA DE USUÁRIOS");
         return userRepository.findActiveUsersOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
-    public List<UserDTO> findInstructors() {
+    public List<bh.app.chronomicon.dto.UserDTO> findInstructors() {
         log.info ("EXIBINDO LISTA DE INSTRUTORES");
         return userRepository.findInstsOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
-    public List<UserDTO> findTrainees() {
+    public List<bh.app.chronomicon.dto.UserDTO> findTrainees() {
         log.info ("EXIBINDO LISTA DE ESTAGIÁRIOS");
         return userRepository.findTraineesOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
-    public List<UserDTO> findOnlyOperators() {
+    public List<bh.app.chronomicon.dto.UserDTO> findOnlyOperators() {
         log.info ("EXIBINDO LISTA DE OPERADORES");
         return userRepository.findOnlyOpsOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
 
-    public UserDTO findUserById(Long id) {
+    public bh.app.chronomicon.dto.UserDTO findUserById(Long id) {
         try{
             UserEntity user = userRepository.findUserById(id);
             log.info ("EXIBINDO OPERADOR DE ID: {}",id);
-            return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+            return new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
         } catch (RuntimeException e) {
             log.warn ("ERRO AO EXIBIR OPERADOR DE ID: {}",id);
@@ -83,7 +82,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO createNewUser(CreateUserDTO user) {
+    public bh.app.chronomicon.dto.UserDTO createNewUser(CreateUserDTO user) {
 
         checkLpnaAlreadyRegistered(user.lpna_identifier());
         List<UserEntity> usersFromRank = userRepository.getUsersOrderedByLowestHierarchyFromRank(user.rank ());
@@ -95,7 +94,7 @@ public class UserService {
         }
         hierarchyDeconfliction(userHierarchy);
 
-        UserEntity userEntity = new UserEntity(user, userHierarchy);
+        UserEntity userEntity = new UserEntity (user, userHierarchy);
         try{
             userRepository.save(userEntity);
         }catch(RuntimeException e){
@@ -103,13 +102,13 @@ public class UserService {
             throw new ServerException ("Erro ao Salvar usuário.");
         }
         log.info ("USUÁRIO CRIADO COM SUCESSO: {}", user.lpna_identifier ());
-        return new UserDTO(userEntity);
+        return new bh.app.chronomicon.dto.UserDTO (userEntity);
     }
 
-    public UserDTO findUserByLPNA(String lpna){
+    public bh.app.chronomicon.dto.UserDTO findUserByLPNA(String lpna){
         UserEntity user = findUser(lpna);
         log.info ("EXIBIDO USUÁRIO: {}", lpna);
-        return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+        return new bh.app.chronomicon.dto.UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
     }
 

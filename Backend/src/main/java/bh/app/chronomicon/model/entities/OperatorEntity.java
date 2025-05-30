@@ -17,13 +17,13 @@ public class OperatorEntity {
 
     private Duration workload;
 
-    private ShiftType operator_shift;
+    private ShiftType shift_type;
     private boolean isSupervisor;
     private boolean isTrainee;
     private boolean isInstructor;
     @ManyToOne
     @JoinColumn(name = "shift_id")
-    private ServiceShiftEntity serviceShift;
+    private ServiceShiftEntity service_shift;
 
 
     public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift,
@@ -31,7 +31,7 @@ public class OperatorEntity {
         this.id = id;
         this.user = user;
         this.workload = workload;
-        this.operator_shift = serviceShift;
+        this.shift_type = serviceShift;
         this.isSupervisor = isSupervisor;
         this.isTrainee = isTrainee;
         this.isInstructor = isInstructor;
@@ -41,7 +41,7 @@ public class OperatorEntity {
         this.id = id;
         this.user = user;
         this.workload = workload;
-        this.operator_shift = serviceShift;
+        this.shift_type = serviceShift;
     }
 
     public OperatorEntity(){
@@ -52,11 +52,11 @@ public class OperatorEntity {
                           boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift) {
         this.user = user;
         this.workload = workload;
-        this.operator_shift = shift;
+        this.shift_type = shift;
         this.isSupervisor = isSupervisor;
         this.isTrainee = isTrainee;
         this.isInstructor = isInstructor;
-        this.serviceShift = serviceShift;
+        this.service_shift = serviceShift;
     }
 
     public UserEntity getUser() {
@@ -75,12 +75,12 @@ public class OperatorEntity {
         this.workload = this.workload.plus (workload);
     }
 
-    public ShiftType getOperator_shift() {
-        return operator_shift;
+    public ShiftType getShift_type() {
+        return shift_type;
     }
 
-    public void setOperator_shift(ShiftType operator_shift) {
-        this.operator_shift = operator_shift;
+    public void setShift_type(ShiftType shift_type) {
+        this.shift_type = shift_type;
     }
 
     public String getId() {

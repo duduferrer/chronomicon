@@ -1,7 +1,6 @@
 package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateOperatorDTO;
-import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.model.entities.OperatorEntity;
 import bh.app.chronomicon.model.entities.ServiceShiftEntity;
@@ -27,7 +26,7 @@ public class OperatorService {
 
     public CreateOperatorDTO createOperator(String lpna, ShiftType op_shift, boolean isSupervisor,
                                             boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift){
-       UserDTO userDTO = userService.findUserByLPNA (lpna);
+       bh.app.chronomicon.dto.UserDTO userDTO = userService.findUserByLPNA (lpna);
        UserEntity user = new UserEntity (userDTO);
 //       TODO: SE NAO TIVER SHIFT, CRIA UM, SE NAO TIVER ROSTER, CRIA UM.
 

@@ -3,16 +3,13 @@ package bh.app.chronomicon.repository;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.model.enums.Rank;
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +25,7 @@ class UserRepositoryTest {
     //    CREATE USER WITH ACTIVEUSER To be defined
     private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
                                   boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
-        UserEntity user = new UserEntity(rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
+        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
                 instructor, trainee, activeUser);
         this.entityManager.persist(user);
         return user;
@@ -36,7 +33,7 @@ class UserRepositoryTest {
     //    CREATE USER WITH ACTIVEUSER TRUE
     private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
                                   boolean supervisor, boolean instructor, boolean trainee){
-        UserEntity user = new UserEntity(rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
+        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
                 instructor, trainee, true);
         this.entityManager.persist(user);
         return user;

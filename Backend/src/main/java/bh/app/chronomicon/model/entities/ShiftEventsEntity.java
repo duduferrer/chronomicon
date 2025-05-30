@@ -14,7 +14,7 @@ public class ShiftEventsEntity {
 
     @ManyToOne
             @JoinColumn(name = "shift_id")
-    ServiceShiftEntity shift;
+    ServiceShiftEntity operator_shift;
 
     EventType type;
     String details;

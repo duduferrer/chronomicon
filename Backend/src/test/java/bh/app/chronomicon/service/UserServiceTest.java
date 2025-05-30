@@ -2,7 +2,6 @@ package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UpdateUserDTO;
-import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.model.entities.UserEntity;
@@ -36,7 +35,7 @@ class UserServiceTest {
     //    CREATE USER WITH ACTIVEUSER To be defined
     private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
                                   boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
-        UserEntity user = new UserEntity(rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
+        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
                 instructor, trainee, activeUser);
         this.userRepository.save(user);
         return user;
@@ -44,7 +43,7 @@ class UserServiceTest {
     //    CREATE USER WITH ACTIVEUSER TRUE
     private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
                                   boolean supervisor, boolean instructor, boolean trainee){
-        UserEntity user = new UserEntity(rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
+        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
                 instructor, trainee, true);
         this.userRepository.save(user);
         return user;
@@ -65,7 +64,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, false, true, false);
 
-         List<UserDTO> supsList = userService.findSupervisors();
+         List<bh.app.chronomicon.dto.UserDTO> supsList = userService.findSupervisors();
 
          assertEquals(3, supsList.size());
          assertEquals("Luffy", supsList.get(0).service_name());
@@ -89,7 +88,7 @@ class UserServiceTest {
                 true, false, true);
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, false, true, false);
-        List<UserDTO> userList = userService.findUsers();
+        List<bh.app.chronomicon.dto.UserDTO> userList = userService.findUsers();
 
         assertEquals(4, userList.size());
         assertEquals("Luffy", userList.get(0).service_name());
@@ -113,7 +112,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, true, true, false);
 
-        List<UserDTO> instList = userService.findInstructors();
+        List<bh.app.chronomicon.dto.UserDTO> instList = userService.findInstructors();
 
         assertEquals(3, instList.size());
         assertEquals("Luffy", instList.get(0).service_name());
@@ -136,7 +135,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, false, true, false);
 
-        List<UserDTO> traineesList = userService.findTrainees();
+        List<bh.app.chronomicon.dto.UserDTO> traineesList = userService.findTrainees();
 
         assertEquals(3, traineesList.size());
         assertEquals("Zoro", traineesList.get(0).service_name());
@@ -160,7 +159,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 false, false, false, false);
 
-        List<UserDTO> operatorsList = userService.findOnlyOperators();
+        List<bh.app.chronomicon.dto.UserDTO> operatorsList = userService.findOnlyOperators();
 
         assertEquals(3, operatorsList.size());
         assertEquals("Zoro", operatorsList.get(0).service_name());
@@ -174,7 +173,7 @@ class UserServiceTest {
     void findUserById() {
         UserEntity createdUser = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-        UserDTO foundUser = userService.findUserById(createdUser.getId());
+        bh.app.chronomicon.dto.UserDTO foundUser = userService.findUserById(createdUser.getId());
         assertEquals("N. Uzumaki", foundUser.service_name());
     }
 
@@ -196,7 +195,7 @@ class UserServiceTest {
     @DisplayName("Should create user successfully")
     void createNewUserSuccess() {
         CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, false, false, false);
-        UserDTO newUser= userService.createNewUser(userDTO);
+        bh.app.chronomicon.dto.UserDTO newUser= userService.createNewUser(userDTO);
         assertEquals("Sasuke", newUser.service_name());
     }
 
@@ -210,8 +209,8 @@ class UserServiceTest {
         userService.createNewUser(user1DTO);
         userRepository.flush();
         entityManager.clear();
-        UserDTO foundUser0 = userService.findUserByLPNA("ZZZZ");
-        UserDTO foundUser1 = userService.findUserByLPNA("AAAA");
+        bh.app.chronomicon.dto.UserDTO foundUser0 = userService.findUserByLPNA("ZZZZ");
+        bh.app.chronomicon.dto.UserDTO foundUser1 = userService.findUserByLPNA("AAAA");
 
 
         assertEquals(0, foundUser0.hierarchy());
@@ -227,7 +226,7 @@ class UserServiceTest {
     void findUserByLPNASuccess() {
          createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-         UserDTO user = userService.findUserByLPNA("ZZZZ");
+         bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNA("ZZZZ");
         assertEquals("N. Uzumaki", user.service_name());
     }
 
@@ -404,7 +403,7 @@ class UserServiceTest {
         userService.updateUser ("AAAA", updateDto);
         userRepository.flush ();
         entityManager.clear ();
-        UserDTO user = userService.findUserByLPNA ("GGGG");
+        bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNA ("GGGG");
         assertEquals ("Kamado", user.service_name ());
         assertEquals (Rank.SUBOFICIAL, user.rank ());
     }

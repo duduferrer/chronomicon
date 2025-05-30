@@ -17,7 +17,7 @@ public class SectorizationEntity {
 
     @ManyToOne
     @JoinColumn(name="shift_id")
-    private ServiceShiftEntity shift;
+    private ServiceShiftEntity operator_shift;
     private Sector sectors;
     private int console;
     private OperatorEntity ctr;
@@ -31,7 +31,7 @@ public class SectorizationEntity {
                                OperatorEntity ass, OperatorEntity ctr_trainee, OperatorEntity ass_trainee,
                                Timestamp start_time, Timestamp end_time) {
         this.id = id;
-        this.shift = shift;
+        this.operator_shift = shift;
         this.sectors = sectors;
         this.console = console;
         this.ctr = ctr;
@@ -109,11 +109,11 @@ public class SectorizationEntity {
     }
 
     public ServiceShiftEntity getShift() {
-        return shift;
+        return operator_shift;
     }
 
     public void setShift(ServiceShiftEntity shift) {
-        this.shift = shift;
+        this.operator_shift = shift;
     }
 
     public String getId() {

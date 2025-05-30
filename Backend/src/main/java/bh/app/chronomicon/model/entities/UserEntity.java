@@ -1,7 +1,6 @@
 package bh.app.chronomicon.model.entities;
 
 import bh.app.chronomicon.dto.CreateUserDTO;
-import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.model.enums.Rank;
 import jakarta.persistence.*;
 
@@ -58,7 +57,7 @@ public class UserEntity {
         this.trainee = userDTO.trainee();
     }
 
-    public UserEntity(UserDTO userDTO){
+    public UserEntity(bh.app.chronomicon.dto.UserDTO userDTO){
         this.rank = userDTO.rank();
         this.lpna_identifier = userDTO.lpna_identifier();
         this.hierarchy = userDTO.hierarchy();
