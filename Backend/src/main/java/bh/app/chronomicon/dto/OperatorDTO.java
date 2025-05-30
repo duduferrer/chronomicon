@@ -6,7 +6,7 @@ import java.time.Duration;
 
 public record OperatorDTO(
         String id,
-        UserDTO user,
+        String lpna,
         Duration workload,
         ShiftType shift
 
