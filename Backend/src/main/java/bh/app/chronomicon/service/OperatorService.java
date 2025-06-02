@@ -55,13 +55,28 @@ public class OperatorService {
         operatorMapper.updateOperatorFromDTO (updateOperatorDTO, operatorEntity);
         try {
             operatorRepository.save (operatorEntity);
-            log.info ("Operador {} atualizado com sucesso", operatorEntity.getId ());
+            log.info ("Operador {} atualizado com sucesso", operatorID);
         }catch (RuntimeException e){
-            log.error ("Erro ao atualizar "+ operatorEntity.getId () + " Erro: " + e );
-            throw new ServerException ("Erro ao atualizar "+ operatorEntity.getId () + " Erro: " + e );
+            log.error ("Erro ao atualizar "+ operatorID + " Erro: " + e );
+            throw new ServerException ("Erro ao atualizar "+ operatorID + " Erro: " + e );
         }
         return new OperatorDTO (operatorEntity.getId (),
                 operatorEntity.getUser ().getLpna_identifier (), operatorEntity.getWorkload (),
                 operatorEntity.getShift_type ());
     }
+
+    public void deleteOperator(String operatorID){
+        OperatorEntity operatorEntity = operatorRepository.findById (operatorID).orElseThrow ( ()->{
+            log.warn ("OPERADOR NÃO ENCONTRADO. ID: {}", operatorID);
+            return new NotFoundException ("Operador ID: "+ operatorID+" não encontrado.");
+        });
+        try {
+            operatorRepository.delete (operatorEntity);
+            log.info ("Operador {} deletado com sucesso", operatorID);
+        }catch (RuntimeException e){
+            log.error ("Erro ao deletar "+ operatorID + " Erro: " + e );
+            throw new ServerException ("Erro ao deletar "+ operatorID + " Erro: " + e );
+        }
+    }
+    //TODO ADICIONAR METODO PARA RETORNAR UMA LISTA COM TODOS OS OPERADORES DO TURNO E FILTRAR SUPS/ESTS/INS/OPERADORES/REFS
 }
