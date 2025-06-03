@@ -1,6 +1,7 @@
 package bh.app.chronomicon.model.entities;
 
 import bh.app.chronomicon.model.enums.ShiftType;
+import bh.app.chronomicon.model.enums.WorkloadOperation;
 import jakarta.persistence.*;
 
 import java.time.Duration;
@@ -71,8 +72,8 @@ public class OperatorEntity {
         return workload;
     }
 
-    public void setWorkload(Duration workload) {
-        this.workload = this.workload.plus (workload);
+    public void setWorkload(Duration delta, WorkloadOperation op) {
+        this.workload = op.apply (this.workload, delta);
     }
 
     public ShiftType getShift_type() {

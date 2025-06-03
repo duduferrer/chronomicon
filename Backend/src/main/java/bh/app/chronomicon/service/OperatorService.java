@@ -8,6 +8,7 @@ import bh.app.chronomicon.model.entities.OperatorEntity;
 import bh.app.chronomicon.model.entities.ServiceShiftEntity;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.model.enums.ShiftType;
+import bh.app.chronomicon.model.enums.WorkloadOperation;
 import bh.app.chronomicon.repository.OperatorRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class OperatorService {
             log.info ("Operador {} atualizado com sucesso", operatorID);
         }catch (RuntimeException e){
             log.error ("Erro ao atualizar "+ operatorID + " Erro: " + e );
-            throw new ServerException ("Erro ao atualizar "+ operatorID + " Erro: " + e );
+            throw new ServerException ("Erro ao atualizar "+ operatorID);
         }
         return new OperatorDTO (operatorEntity.getId (),
                 operatorEntity.getUser ().getLpna_identifier (), operatorEntity.getWorkload (),
@@ -77,7 +78,7 @@ public class OperatorService {
             log.info ("Operador {} deletado com sucesso", operatorID);
         }catch (RuntimeException e){
             log.error ("Erro ao deletar "+ operatorID + " Erro: " + e );
-            throw new ServerException ("Erro ao deletar "+ operatorID + " Erro: " + e );
+            throw new ServerException ("Erro ao deletar "+ operatorID);
         }
     }
 
@@ -129,6 +130,23 @@ public class OperatorService {
                         operator.getWorkload (), operator.getShift_type (), operator.isSupervisor (), operator.isInstructor(),
                         operator.isTrainee()))
                 .toList();
+    }
+
+    public OperatorDTO updateWorkload(String id, int hours, int minutes, WorkloadOperation operation){
+        OperatorEntity operatorEntity = operatorRepository.findById (id).orElseThrow ( ()->{
+            log.warn ("OPERADOR NÃO ENCONTRADO. ID: {}", id);
+            return new NotFoundException ("Operador ID: "+ id+" não encontrado.");
+        });
+        try{
+            Duration delta = Duration.ofHours (hours).plusMinutes (minutes);
+            operatorEntity.setWorkload (delta, operation);
+            operatorRepository.save (operatorEntity);
+        } catch (RuntimeException e) {
+            log.error ("Erro ao modificar Carga Horária. Id: "+ id + ". Horas: "+hours+", Minutos: "+minutes+" Operação: " + operation + ". Erro: " + e );
+            throw new ServerException ("Erro ao modificar carga horária.");
+        }
+        return new OperatorDTO (id, operatorEntity.getUser ().getLpna_identifier (), operatorEntity.getWorkload (),
+                operatorEntity.getShift_type (), operatorEntity.isSupervisor (), operatorEntity.isInstructor (), operatorEntity.isTrainee ());
     }
 
 }
