@@ -110,4 +110,12 @@ public class OperatorEntity {
     public void setInstructor(boolean instructor) {
         isInstructor = instructor;
     }
+
+    public ServiceShiftEntity getService_shift() {
+        return service_shift;
+    }
+
+    public void setService_shift(ServiceShiftEntity service_shift) {
+        this.service_shift = service_shift;
+    }
 }

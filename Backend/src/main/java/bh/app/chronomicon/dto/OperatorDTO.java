@@ -8,7 +8,10 @@ public record OperatorDTO(
         String id,
         String lpna,
         Duration workload,
-        ShiftType shift
+        ShiftType shift,
+        boolean isSpvs,
+        boolean isInst,
+        boolean isTrainee
 
 ) {
 

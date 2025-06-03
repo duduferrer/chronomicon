@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 
 @Service
 public class OperatorService {
@@ -62,7 +63,8 @@ public class OperatorService {
         }
         return new OperatorDTO (operatorEntity.getId (),
                 operatorEntity.getUser ().getLpna_identifier (), operatorEntity.getWorkload (),
-                operatorEntity.getShift_type ());
+                operatorEntity.getShift_type (), operatorEntity.isSupervisor (), operatorEntity.isInstructor (),
+                operatorEntity.isTrainee ());
     }
 
     public void deleteOperator(String operatorID){
@@ -78,5 +80,55 @@ public class OperatorService {
             throw new ServerException ("Erro ao deletar "+ operatorID + " Erro: " + e );
         }
     }
-    //TODO ADICIONAR METODO PARA RETORNAR UMA LISTA COM TODOS OS OPERADORES DO TURNO E FILTRAR SUPS/ESTS/INS/OPERADORES/REFS
+
+    public List<OperatorDTO> getAllOperators(int shiftID){
+        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        return operatorRepository.findAllStaffOrderByHierarchy (shiftID)
+                .stream()
+                .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
+                        operator.getWorkload (), operator.getShift_type (), operator.isSupervisor (), operator.isInstructor(),
+                        operator.isTrainee()))
+                .toList();
+    }
+
+    public List<OperatorDTO> getOnlyOperators(int shiftID){
+        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        return operatorRepository.findOperatorsOnlyOrderByHierarchy (shiftID)
+                .stream()
+                .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
+                        operator.getWorkload (), operator.getShift_type (), operator.isSupervisor (), operator.isInstructor(),
+                        operator.isTrainee()))
+                .toList();
+    }
+
+    public List<OperatorDTO> getSupervisors(int shiftID){
+        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        return operatorRepository.findSupsOrderByHierarchy (shiftID)
+                .stream()
+                .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
+                        operator.getWorkload (), operator.getShift_type (), operator.isSupervisor (), operator.isInstructor(),
+                        operator.isTrainee()))
+                .toList();
+    }
+
+    public List<OperatorDTO> getInstructors(int shiftID){
+        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        return operatorRepository.findInstsOrderByHierarchy (shiftID)
+                .stream()
+                .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
+                        operator.getWorkload (), operator.getShift_type (), operator.isSupervisor (), operator.isInstructor(),
+                        operator.isTrainee()))
+                .toList();
+    }
+
+    public List<OperatorDTO> getTrainees(int shiftID){
+        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        return operatorRepository.findTraineesOrderByHierarchy (shiftID)
+                .stream()
+                .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
+                        operator.getWorkload (), operator.getShift_type (), operator.isSupervisor (), operator.isInstructor(),
+                        operator.isTrainee()))
+                .toList();
+    }
+
 }
