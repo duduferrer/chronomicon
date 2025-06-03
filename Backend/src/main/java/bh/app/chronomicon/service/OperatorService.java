@@ -82,7 +82,7 @@ public class OperatorService {
     }
 
     public List<OperatorDTO> getAllOperators(int shiftID){
-        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        log.info ("EXIBINDO LISTA DE TODOS OS INTEGRANTES DO TURNO");
         return operatorRepository.findAllStaffOrderByHierarchy (shiftID)
                 .stream()
                 .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
@@ -102,7 +102,7 @@ public class OperatorService {
     }
 
     public List<OperatorDTO> getSupervisors(int shiftID){
-        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        log.info ("EXIBINDO LISTA DE SUPERVISORES DO TURNO");
         return operatorRepository.findSupsOrderByHierarchy (shiftID)
                 .stream()
                 .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
@@ -112,7 +112,7 @@ public class OperatorService {
     }
 
     public List<OperatorDTO> getInstructors(int shiftID){
-        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        log.info ("EXIBINDO LISTA DE INSTRUTORES DO TURNO");
         return operatorRepository.findInstsOrderByHierarchy (shiftID)
                 .stream()
                 .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
@@ -122,7 +122,7 @@ public class OperatorService {
     }
 
     public List<OperatorDTO> getTrainees(int shiftID){
-        log.info ("EXIBINDO LISTA DE OPERADORES DO TURNO");
+        log.info ("EXIBINDO LISTA DE ESTAGIARIOS DO TURNO");
         return operatorRepository.findTraineesOrderByHierarchy (shiftID)
                 .stream()
                 .map(operator -> new OperatorDTO (operator.getId (), operator.getUser ().getLpna_identifier (),
