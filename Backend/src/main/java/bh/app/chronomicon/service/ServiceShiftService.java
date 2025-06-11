@@ -47,11 +47,7 @@ public class ServiceShiftService {
     }
 
     public ServiceShiftEntity closeShift(int id, UserDTO activeUser){
-        ServiceShiftEntity shiftEntity = shiftRepository.findById (id).orElseThrow (
-                ()-> { log.warn ("Turno não encontrado. ID: {}", id);
-                       return new NotFoundException ("Turno de ID: "+id+" não encontrado");
-                }
-        );
+        ServiceShiftEntity shiftEntity = getServiceShiftByID(id);
         shiftEntity.setClosed_by (activeUser.lpna_identifier ());
         shiftEntity.setClosing_time (Timestamp.valueOf (LocalDateTime.now ()));
         shiftEntity.setActive (false);
@@ -66,11 +62,7 @@ public class ServiceShiftService {
     }
 
     public ServiceShiftEntity invalidateShift(int id, UserDTO activeUser){
-        ServiceShiftEntity shiftEntity = shiftRepository.findById (id).orElseThrow (
-                ()-> { log.warn ("Turno não encontrado. ID: {}", id);
-                    return new NotFoundException ("Turno de ID: "+id+" não encontrado");
-                }
-        );
+        ServiceShiftEntity shiftEntity = getServiceShiftByID(id);
         shiftEntity.setClosed_by (activeUser.lpna_identifier ());
         shiftEntity.setClosing_time (Timestamp.valueOf (LocalDateTime.now ()));
         shiftEntity.setActive (false);
@@ -87,11 +79,7 @@ public class ServiceShiftService {
     }
 
     public ServiceShiftEntity updateShiftAfterClose(int id, UserDTO activeUser, UpdateShiftDTO updateShiftDTO){
-        ServiceShiftEntity shiftEntity = shiftRepository.findById (id).orElseThrow (
-                ()-> { log.warn ("Turno não encontrado. ID: {}", id);
-                    return new NotFoundException ("Turno de ID: "+id+" não encontrado");
-                }
-        );
+        ServiceShiftEntity shiftEntity = getServiceShiftByID(id);
         String closedByLPNA = shiftEntity.getClosed_by ();
         if(!Objects.equals (closedByLPNA, activeUser.lpna_identifier ())){
             log.warn ("USUÁRIO {} NÃO É O USUÁRIO QUE FECHOU O LIVRO {}({})", activeUser.lpna_identifier (), shiftEntity, closedByLPNA);
@@ -109,6 +97,17 @@ public class ServiceShiftService {
             throw new ServerException ("Erro do servidor ao atualizar turno.");
         }
         return shiftEntity;
+    }
+
+    public ServiceShiftEntity getServiceShiftByID(int id){
+        ServiceShiftEntity serviceShiftEntity = shiftRepository.findById (id).orElseThrow (
+                ()->{
+                    log.warn ("Turno não encontrado. ID: {}", id);
+                    return new NotFoundException ("Turno de ID: "+id+" não encontrado");
+                }
+        );
+        log.info ("TURNO {} ENCONTRADO", id);
+        return serviceShiftEntity;
     }
 
 

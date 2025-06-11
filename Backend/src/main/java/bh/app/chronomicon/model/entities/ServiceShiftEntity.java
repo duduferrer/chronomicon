@@ -1,7 +1,6 @@
 package bh.app.chronomicon.model.entities;
 
 
-import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.model.enums.ShiftType;

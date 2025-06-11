@@ -148,5 +148,5 @@ public class OperatorService {
         return new OperatorDTO (id, operatorEntity.getUser ().getLpna_identifier (), operatorEntity.getWorkload (),
                 operatorEntity.getShift_type (), operatorEntity.isSupervisor (), operatorEntity.isInstructor (), operatorEntity.isTrainee ());
     }
-
 }
+
