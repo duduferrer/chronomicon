@@ -20,9 +20,17 @@ public class SectorizationEntity {
     private ServiceShiftEntity operator_shift;
     private Sector sectors;
     private int console;
+    @ManyToOne
+    @JoinColumn(name="shift_id")
     private OperatorEntity ctr;
+    @ManyToOne
+    @JoinColumn(name="shift_id")
     private OperatorEntity ass;
+    @ManyToOne
+    @JoinColumn(name="shift_id")
     private OperatorEntity ctr_trainee;
+    @ManyToOne
+    @JoinColumn(name="shift_id")
     private OperatorEntity ass_trainee;
     private Timestamp start_time;
     private Timestamp end_time;

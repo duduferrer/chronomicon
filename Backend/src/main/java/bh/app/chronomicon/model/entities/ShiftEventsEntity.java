@@ -24,7 +24,10 @@ public class ShiftEventsEntity {
     private Timestamp end;
     private Timestamp created_at;
     private Timestamp updated_at;
+    @ManyToOne
+    @JoinColumn(name = "shift_id")
     private UserEntity created_by;
+    @JoinColumn(name = "shift_id")
     private UserEntity last_updated_by;
 
 

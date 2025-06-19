@@ -2,12 +2,17 @@ package bh.app.chronomicon.model.entities;
 
 import bh.app.chronomicon.model.enums.Role;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_sys_users")
-public class SystemUserEntity {
+public class SystemUserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,10 +30,46 @@ public class SystemUserEntity {
     private boolean isCaster=false;
     private boolean isPoolCaster=false;
     private boolean isHiker=false;
+    @Column(unique = true)
+    private String emailAddress;
+    @Column(unique = true)
+    private String saram;
 
     public SystemUserEntity(){
 
     }
+
+    public SystemUserEntity(String id, Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram) {
+        this.id = id;
+        this.role = role;
+        this.user = user;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.isActive = isActive;
+        this.last_login = last_login;
+        this.password = password;
+        this.isCaster = isCaster;
+        this.isPoolCaster = isPoolCaster;
+        this.isHiker = isHiker;
+        this.emailAddress = emailAddress;
+        this.saram = saram;
+    }
+
+    public SystemUserEntity(Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram) {
+        this.role = role;
+        this.user = user;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.isActive = isActive;
+        this.last_login = last_login;
+        this.password = password;
+        this.isCaster = isCaster;
+        this.isPoolCaster = isPoolCaster;
+        this.isHiker = isHiker;
+        this.emailAddress = emailAddress;
+        this.saram = saram;
+    }
+
     public SystemUserEntity(Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
         this.role = role;
         this.user = user;
@@ -108,8 +149,38 @@ public class SystemUserEntity {
         this.last_login = last_login;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of (new SimpleGrantedAuthority ("ROLE_"+getRole ()));
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return saram;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive ();
     }
 
     public void setPassword(String password) {
@@ -138,5 +209,21 @@ public class SystemUserEntity {
 
     public void setHiker(boolean hiker) {
         isHiker = hiker;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public String getSaram() {
+        return saram;
+    }
+
+    public void setSaram(String saram) {
+        this.saram = saram;
     }
 }

@@ -13,7 +13,7 @@ public class OperatorEntity {
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "lpna_identifier")
+    @JoinColumn(referencedColumnName = "lpna_identifier")
     private UserEntity user;
 
     private Duration workload;
