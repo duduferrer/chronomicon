@@ -107,7 +107,7 @@ public class UserService {
         return new UserDTO (userEntity);
     }
 
-    public UserDTO findUserByLPNA(String lpna){
+    public UserDTO findUserByLPNAReturnDTO(String lpna){
         UserEntity user = findUser(lpna);
         log.info ("EXIBIDO USUÁRIO: {}", lpna);
         return new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
@@ -147,7 +147,7 @@ public class UserService {
 
     }
 
-    private UserEntity findUser(String lpna){
+    public UserEntity findUser(String lpna){
         UserEntity user = userRepository.findUserByLPNA(lpna);
         if(user==null){
             log.info ("USUÁRIO {} PROCURADO E NAO ENCONTRADO", lpna);

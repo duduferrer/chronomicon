@@ -31,10 +31,14 @@ public class OperatorService {
     @Autowired
     OperatorMapper operatorMapper;
 
+    @Autowired
+    ServiceShiftService serviceShiftService;
+
     public CreateOperatorDTO createOperator(String lpna, ShiftType op_shift, boolean isSupervisor,
-                                            boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift){
-       UserDTO userDTO = userService.findUserByLPNA (lpna);
+                                            boolean isTrainee, boolean isInstructor, int serviceShiftID){
+       UserDTO userDTO = userService.findUserByLPNAReturnDTO (lpna);
        UserEntity user = new UserEntity (userDTO);
+       ServiceShiftEntity serviceShift = serviceShiftService.getServiceShiftByID (serviceShiftID);
 
        try {
            OperatorEntity operator = new OperatorEntity (user, Duration.ZERO, op_shift, isSupervisor,

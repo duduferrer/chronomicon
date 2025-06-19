@@ -209,8 +209,8 @@ class UserServiceTest {
         userService.createNewUser(user1DTO);
         userRepository.flush();
         entityManager.clear();
-        bh.app.chronomicon.dto.UserDTO foundUser0 = userService.findUserByLPNA("ZZZZ");
-        bh.app.chronomicon.dto.UserDTO foundUser1 = userService.findUserByLPNA("AAAA");
+        bh.app.chronomicon.dto.UserDTO foundUser0 = userService.findUserByLPNAReturnDTO ("ZZZZ");
+        bh.app.chronomicon.dto.UserDTO foundUser1 = userService.findUserByLPNAReturnDTO ("AAAA");
 
 
         assertEquals(0, foundUser0.hierarchy());
@@ -223,22 +223,22 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should find user passing LPNA as parameter")
-    void findUserByLPNASuccess() {
+    void findUserByLPNAReturnDTOSuccess() {
          createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-         bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNA("ZZZZ");
+         bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNAReturnDTO ("ZZZZ");
         assertEquals("N. Uzumaki", user.service_name());
     }
 
     @Test
     @Transactional
     @DisplayName("Should return exception when searching user passing LPNA as parameter")
-    void findUserByLPNAFail() {
+    void findUserByLPNAReturnDTOFail() {
         createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
 
         assertThrows(NotFoundException.class, ()->{
-            userService.findUserByLPNA("AAAA");
+            userService.findUserByLPNAReturnDTO ("AAAA");
         });
     }
 
@@ -403,7 +403,7 @@ class UserServiceTest {
         userService.updateUser ("AAAA", updateDto);
         userRepository.flush ();
         entityManager.clear ();
-        bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNA ("GGGG");
+        bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNAReturnDTO ("GGGG");
         assertEquals ("Kamado", user.service_name ());
         assertEquals (Rank.SUBOFICIAL, user.rank ());
     }
