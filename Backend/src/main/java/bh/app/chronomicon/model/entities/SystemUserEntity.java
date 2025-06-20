@@ -20,7 +20,7 @@ public class SystemUserEntity implements UserDetails {
     private Role role;
 
     @OneToOne
-    @JoinColumn(name = "user_lpna", referencedColumnName = "lpna_identifier")
+    @JoinColumn(name = "lpna_identifier", referencedColumnName = "lpna_identifier")
     private UserEntity user;
     private Timestamp created_at;
     private Timestamp updated_at;

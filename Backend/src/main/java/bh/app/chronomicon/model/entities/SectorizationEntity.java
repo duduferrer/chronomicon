@@ -21,20 +21,20 @@ public class SectorizationEntity {
     private Sector sectors;
     private int console;
     @ManyToOne
-    @JoinColumn(name="shift_id")
+    @JoinColumn(name="ctr_id")
     private OperatorEntity ctr;
     @ManyToOne
-    @JoinColumn(name="shift_id")
+    @JoinColumn(name="ass_id")
     private OperatorEntity ass;
     @ManyToOne
-    @JoinColumn(name="shift_id")
+    @JoinColumn(name="ctr_t_id")
     private OperatorEntity ctr_trainee;
     @ManyToOne
-    @JoinColumn(name="shift_id")
+    @JoinColumn(name="ass_t_id")
     private OperatorEntity ass_trainee;
     private Timestamp start_time;
     private Timestamp end_time;
-
+    //TODO adicionar Entity Coordenador
     public SectorizationEntity(String id, ServiceShiftEntity shift, Sector sectors, int console, OperatorEntity ctr,
                                OperatorEntity ass, OperatorEntity ctr_trainee, OperatorEntity ass_trainee,
                                Timestamp start_time, Timestamp end_time) {
