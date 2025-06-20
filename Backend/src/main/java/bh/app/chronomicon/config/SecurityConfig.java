@@ -24,7 +24,12 @@ public class SecurityConfig {
                 .csrf (csrf->csrf.disable ())
                 //regras de autorização
                 .authorizeHttpRequests (auth-> auth
-                        .requestMatchers ("/public/**", "/login").permitAll ()
+                        .requestMatchers ("/public/**",
+                                "/api/v*/auth/login",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api-docs/**").permitAll ()
                         .requestMatchers ("/admin/**").hasRole ("ADMIN")
                         .anyRequest ().authenticated ()
                 )
