@@ -1,6 +1,5 @@
 package bh.app.chronomicon.dto;
 
-import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.model.enums.Rank;
 
 public record UpdateUserDTO(

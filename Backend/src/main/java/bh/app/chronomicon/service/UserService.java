@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class UserService {
         log.info ("EXIBINDO LISTA DE SUPERVISORES");
         return userRepository.findSupsOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                         .toList();
     }
@@ -38,7 +39,7 @@ public class UserService {
         log.info ("EXIBINDO LISTA DE USUÁRIOS");
         return userRepository.findActiveUsersOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
@@ -47,7 +48,7 @@ public class UserService {
         log.info ("EXIBINDO LISTA DE INSTRUTORES");
         return userRepository.findInstsOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
@@ -56,7 +57,7 @@ public class UserService {
         log.info ("EXIBINDO LISTA DE ESTAGIÁRIOS");
         return userRepository.findTraineesOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
@@ -65,7 +66,7 @@ public class UserService {
         log.info ("EXIBINDO LISTA DE OPERADORES");
         return userRepository.findOnlyOpsOrderByHierarchy()
                 .stream()
-                .map(user -> new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+                .map(user -> new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                         user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee()))
                 .toList();
     }
@@ -74,7 +75,7 @@ public class UserService {
         try{
             UserEntity user = userRepository.findUserById(id);
             log.info ("EXIBINDO OPERADOR DE ID: {}",id);
-            return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+            return new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
         } catch (RuntimeException e) {
             log.warn ("ERRO AO EXIBIR OPERADOR DE ID: {}",id);
@@ -95,7 +96,7 @@ public class UserService {
         }
         hierarchyDeconfliction(userHierarchy);
 
-        UserEntity userEntity = new UserEntity(user, userHierarchy);
+        UserEntity userEntity = new UserEntity (user, userHierarchy);
         try{
             userRepository.save(userEntity);
         }catch(RuntimeException e){
@@ -103,13 +104,13 @@ public class UserService {
             throw new ServerException ("Erro ao Salvar usuário.");
         }
         log.info ("USUÁRIO CRIADO COM SUCESSO: {}", user.lpna_identifier ());
-        return new UserDTO(userEntity);
+        return new UserDTO (userEntity);
     }
 
-    public UserDTO findUserByLPNA(String lpna){
+    public UserDTO findUserByLPNAReturnDTO(String lpna){
         UserEntity user = findUser(lpna);
         log.info ("EXIBIDO USUÁRIO: {}", lpna);
-        return new UserDTO(user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
+        return new UserDTO (user.getLpna_identifier(), user.getFull_name(), user.getService_name(),
                     user.getRank(), user.getHierarchy(), user.isSupervisor(), user.isInstructor(), user.isTrainee());
     }
 
@@ -146,7 +147,7 @@ public class UserService {
 
     }
 
-    private UserEntity findUser(String lpna){
+    public UserEntity findUser(String lpna){
         UserEntity user = userRepository.findUserByLPNA(lpna);
         if(user==null){
             log.info ("USUÁRIO {} PROCURADO E NAO ENCONTRADO", lpna);

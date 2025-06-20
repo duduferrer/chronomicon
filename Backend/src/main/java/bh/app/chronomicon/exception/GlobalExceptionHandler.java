@@ -41,4 +41,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponseDTO> handleForbiddenException(ForbiddenException exception){
+        ErrorResponseDTO response = new ErrorResponseDTO(
+                HttpStatus.FORBIDDEN.value(),
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    @ExceptionHandler(NotActiveEventException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNotActiveEventException(NotActiveEventException exception){
+        ErrorResponseDTO responseDTO = new ErrorResponseDTO (
+                HttpStatus.BAD_REQUEST.value (),
+                exception.getMessage (),
+                LocalDateTime.now ()
+        );
+        return ResponseEntity.status (HttpStatus.BAD_REQUEST).body (responseDTO);
+    }
+
 }

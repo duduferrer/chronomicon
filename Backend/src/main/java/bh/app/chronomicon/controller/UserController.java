@@ -17,7 +17,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/staff")
+@RequestMapping(value = "api/v1/staff")
 @Tag(name = "Usuários", description = "Operações relacionadas a usuários")
 public class UserController {
 
@@ -99,7 +99,7 @@ public class UserController {
     })
     @GetMapping(value = {"/lpna/{lpna}"})
     public UserDTO findByLPNA(@PathVariable String lpna){
-        return service.findUserByLPNA(lpna);
+        return service.findUserByLPNAReturnDTO (lpna);
     }
 
     @Operation(summary = "Atualiza Status ativo/inativo", description = "Muda o status ativo ou inativo de um usuário")
