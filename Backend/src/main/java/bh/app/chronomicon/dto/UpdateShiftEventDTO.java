@@ -8,8 +8,8 @@ import java.sql.Timestamp;
 public record UpdateShiftEventDTO(
         EventType type,
         String details,
-        Timestamp start,
-        Timestamp end,
+        Timestamp eventStart,
+        Timestamp eventEnd,
         Timestamp updated_at,
         UserEntity last_updated_by
 ) {

@@ -20,8 +20,8 @@ public class ShiftEventsEntity {
 
     private EventType type;
     private String details;
-    private Timestamp start;
-    private Timestamp end;
+    private Timestamp eventStart;
+    private Timestamp eventEnd;
     private Timestamp created_at;
     private Timestamp updated_at;
     @ManyToOne
@@ -36,32 +36,32 @@ public class ShiftEventsEntity {
 
     }
 
-    public ShiftEventsEntity(String id, ServiceShiftEntity operator_shift, EventType type, String details, Timestamp start, Timestamp end) {
+    public ShiftEventsEntity(String id, ServiceShiftEntity operator_shift, EventType type, String details, Timestamp eventStart, Timestamp eventEnd) {
         this.id = id;
         this.operator_shift = operator_shift;
         this.type = type;
         this.details = details;
-        this.start = start;
-        this.end = end;
+        this.eventStart = eventStart;
+        this.eventEnd = eventEnd;
     }
-    public ShiftEventsEntity(ServiceShiftEntity operator_shift, EventType type, String details, Timestamp start, Timestamp end) {
+    public ShiftEventsEntity(ServiceShiftEntity operator_shift, EventType type, String details, Timestamp eventStart, Timestamp eventEnd) {
         this.operator_shift = operator_shift;
         this.type = type;
         this.details = details;
-        this.start = start;
-        this.end = end;
+        this.eventStart = eventStart;
+        this.eventEnd = eventEnd;
 
         if (operator_shift != null) {
             operator_shift.addEvent(this);
         }
     }
 
-    public ShiftEventsEntity(ServiceShiftEntity operator_shift, EventType type, String details, Timestamp start, Timestamp end, Timestamp created_at, Timestamp updated_at, UserEntity created_by, UserEntity last_updated_by) {
+    public ShiftEventsEntity(ServiceShiftEntity operator_shift, EventType type, String details, Timestamp eventStart, Timestamp eventEnd, Timestamp created_at, Timestamp updated_at, UserEntity created_by, UserEntity last_updated_by) {
         this.operator_shift = operator_shift;
         this.type = type;
         this.details = details;
-        this.start = start;
-        this.end = end;
+        this.eventStart = eventStart;
+        this.eventEnd = eventEnd;
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.created_by = created_by;
@@ -137,19 +137,19 @@ public class ShiftEventsEntity {
         this.details = details;
     }
 
-    public Timestamp getStart() {
-        return start;
+    public Timestamp getEventStart() {
+        return eventStart;
     }
 
-    public void setStart(Timestamp start) {
-        this.start = start;
+    public void setEventStart(Timestamp eventStart) {
+        this.eventStart = eventStart;
     }
 
-    public Timestamp getEnd() {
-        return end;
+    public Timestamp getEventEnd() {
+        return eventEnd;
     }
 
-    public void setEnd(Timestamp end) {
-        this.end = end;
+    public void setEventEnd(Timestamp eventEnd) {
+        this.eventEnd = eventEnd;
     }
 }

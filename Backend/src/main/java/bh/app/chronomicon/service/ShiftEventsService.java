@@ -3,7 +3,6 @@ package bh.app.chronomicon.service;
 import bh.app.chronomicon.dto.CloseShiftEventDTO;
 import bh.app.chronomicon.dto.ShiftEventDTO;
 import bh.app.chronomicon.dto.UpdateShiftEventDTO;
-import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.NotActiveEventException;
 import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.exception.ServerException;
@@ -44,7 +43,7 @@ public class ShiftEventsService {
         try{
             ShiftEventsEntity savedEvent = shiftEventsRepository.save (shiftEventsEntity);
             log.info ("EVENTO {} INCLUIDO COM SUCESSO", savedEvent.getId ());
-            return new ShiftEventDTO (savedEvent.getId (), savedEvent.getType (), savedEvent.getDetails (), savedEvent.getStart (), savedEvent.getEnd ());
+            return new ShiftEventDTO (savedEvent.getId (), savedEvent.getType (), savedEvent.getDetails (), savedEvent.getEventStart (), savedEvent.getEventEnd ());
         } catch (RuntimeException e) {
             log.error ("ERRO AO INCLUIR EVENTO {}. ERRO: {}", shiftEventsEntity.getDetails (), e.toString ());
             throw new ServerException("ERRO AO INCLUIR EVENTO: "+shiftEventsEntity.getDetails());
@@ -55,19 +54,19 @@ public class ShiftEventsService {
         ShiftEventsEntity shiftEventsEntity = getShiftEventByID (eventID);
         Timestamp now = Timestamp.valueOf (LocalDateTime.now ());
         UserEntity userEntity = userService.findUser(userLpna);
-        if(shiftEventsEntity.getEnd () == null){
+        if(shiftEventsEntity.getEventEnd () == null){
             CloseShiftEventDTO closeShiftEventDTO = new CloseShiftEventDTO (details, end, userEntity, now);
             shiftEventMapper.closeShiftEventFromDTO (closeShiftEventDTO, shiftEventsEntity);
             try{
                 ShiftEventsEntity savedEvent = shiftEventsRepository.save (shiftEventsEntity);
                 log.info ("EVENTO {} INCLUIDO COM SUCESSO", savedEvent.getId ());
-                return new ShiftEventDTO (savedEvent.getId (), savedEvent.getType (), savedEvent.getDetails (), savedEvent.getStart (), savedEvent.getEnd ());
+                return new ShiftEventDTO (savedEvent.getId (), savedEvent.getType (), savedEvent.getDetails (), savedEvent.getEventStart (), savedEvent.getEventEnd ());
             } catch (RuntimeException e) {
                 log.error ("ERRO AO INCLUIR EVENTO {}. ERRO: {}", shiftEventsEntity.getDetails (), e.toString ());
                 throw new ServerException("ERRO AO INCLUIR EVENTO: "+shiftEventsEntity.getDetails());
             }
         }else{
-            log.warn ("Evento: {} já consta com horário de fechamento({}).",shiftEventsEntity.getId (), shiftEventsEntity.getEnd ());
+            log.warn ("Evento: {} já consta com horário de fechamento({}).",shiftEventsEntity.getId (), shiftEventsEntity.getEventEnd ());
             throw new NotActiveEventException ("Evento: "+eventID+" já possui horário de encerramento.");
         }
 
@@ -82,7 +81,7 @@ public class ShiftEventsService {
         try{
             ShiftEventsEntity savedEvent = shiftEventsRepository.save (shiftEventsEntity);
             log.info ("EVENTO {} INCLUIDO COM SUCESSO", savedEvent.getId ());
-            return new ShiftEventDTO (savedEvent.getId (), savedEvent.getType (), savedEvent.getDetails (), savedEvent.getStart (), savedEvent.getEnd ());
+            return new ShiftEventDTO (savedEvent.getId (), savedEvent.getType (), savedEvent.getDetails (), savedEvent.getEventStart (), savedEvent.getEventEnd ());
         } catch (RuntimeException e) {
             log.error ("ERRO AO INCLUIR EVENTO {}. ERRO: {}", shiftEventsEntity.getDetails (), e.toString ());
             throw new ServerException("ERRO AO INCLUIR EVENTO: "+shiftEventsEntity.getDetails());
