@@ -4,10 +4,6 @@ on:
   push:
     paths:
       - 'Frontend/**'
-  pull_request:
-    paths:
-      - 'Frontend/**'
-
 jobs:
   frontend-checks:
     name: Frontend - Lint & Commit Check

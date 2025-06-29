@@ -1,124 +1,122 @@
 package bh.app.chronomicon.model.entities;
 
-
+import bh.app.chronomicon.model.enums.ShiftType;
+import bh.app.chronomicon.model.enums.WorkloadOperation;
 import jakarta.persistence.*;
 
 import java.time.Duration;
 
 @Entity
-@Table(name = "tb_shift_operators")
 public class OperatorEntity {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @ManyToOne
-    @JoinColumn(name = "lpna_identifier")
-    private UserEntity operator;
+    @JoinColumn(name="lpna_identifier", referencedColumnName = "lpna_identifier")
+    private UserEntity user;
 
     private Duration workload;
 
+    private ShiftType shift_type;
+    private boolean isSupervisor;
+    private boolean isTrainee;
+    private boolean isInstructor;
     @ManyToOne
     @JoinColumn(name = "shift_id")
-    private RosterEntity shift;
+    private ServiceShiftEntity service_shift;
 
-    private boolean rm1 = false;
-    private boolean rm2 = false;
-    private boolean rm3 = false;
-    private boolean rt1 = false;
-    private boolean rt2 = false;
-    private boolean rt3 = false;
 
-    public OperatorEntity() {
-    }
-
-    public OperatorEntity(int id, UserEntity operator, Duration workload, RosterEntity shift, boolean rm1, boolean rm2, boolean rm3, boolean rt1, boolean rt2, boolean rt3) {
+    public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift,
+                          boolean isSupervisor, boolean isTrainee, boolean isInstructor) {
         this.id = id;
-        this.operator = operator;
+        this.user = user;
         this.workload = workload;
-        this.shift = shift;
-        this.rm1 = rm1;
-        this.rm2 = rm2;
-        this.rm3 = rm3;
-        this.rt1 = rt1;
-        this.rt2 = rt2;
-        this.rt3 = rt3;
+        this.shift_type = serviceShift;
+        this.isSupervisor = isSupervisor;
+        this.isTrainee = isTrainee;
+        this.isInstructor = isInstructor;
     }
 
-    public UserEntity getOperator() {
-        return operator;
+    public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift) {
+        this.id = id;
+        this.user = user;
+        this.workload = workload;
+        this.shift_type = serviceShift;
     }
 
-    public void setOperator(UserEntity operator) {
-        this.operator = operator;
+    public OperatorEntity(){
+
+    }
+
+    public OperatorEntity(UserEntity user, Duration workload, ShiftType shift, boolean isSupervisor,
+                          boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift) {
+        this.user = user;
+        this.workload = workload;
+        this.shift_type = shift;
+        this.isSupervisor = isSupervisor;
+        this.isTrainee = isTrainee;
+        this.isInstructor = isInstructor;
+        this.service_shift = serviceShift;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     public Duration getWorkload() {
         return workload;
     }
 
-    public void setWorkload(Duration workload) {
-        this.workload = workload;
+    public void setWorkload(Duration delta, WorkloadOperation op) {
+        this.workload = op.apply (this.workload, delta);
     }
 
-    public RosterEntity getShift() {
-        return shift;
+    public ShiftType getShift_type() {
+        return shift_type;
     }
 
-    public void setShift(RosterEntity shift) {
-        this.shift = shift;
+    public void setShift_type(ShiftType shift_type) {
+        this.shift_type = shift_type;
     }
 
-    public boolean isRm1() {
-        return rm1;
-    }
-
-    public void setRm1(boolean rm1) {
-        this.rm1 = rm1;
-    }
-
-    public boolean isRm2() {
-        return rm2;
-    }
-
-    public void setRm2(boolean rm2) {
-        this.rm2 = rm2;
-    }
-
-    public boolean isRm3() {
-        return rm3;
-    }
-
-    public void setRm3(boolean rm3) {
-        this.rm3 = rm3;
-    }
-
-    public boolean isRt1() {
-        return rt1;
-    }
-
-    public void setRt1(boolean rt1) {
-        this.rt1 = rt1;
-    }
-
-    public boolean isRt2() {
-        return rt2;
-    }
-
-    public void setRt2(boolean rt2) {
-        this.rt2 = rt2;
-    }
-
-    public boolean isRt3() {
-        return rt3;
-    }
-
-    public void setRt3(boolean rt3) {
-        this.rt3 = rt3;
-    }
-
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public boolean isSupervisor() {
+        return isSupervisor;
+    }
+
+    public void setSupervisor(boolean supervisor) {
+        isSupervisor = supervisor;
+    }
+
+    public boolean isTrainee() {
+        return isTrainee;
+    }
+
+    public void setTrainee(boolean trainee) {
+        isTrainee = trainee;
+    }
+
+    public boolean isInstructor() {
+        return isInstructor;
+    }
+
+    public void setInstructor(boolean instructor) {
+        isInstructor = instructor;
+    }
+
+    public ServiceShiftEntity getService_shift() {
+        return service_shift;
+    }
+
+    public void setService_shift(ServiceShiftEntity service_shift) {
+        this.service_shift = service_shift;
     }
 }

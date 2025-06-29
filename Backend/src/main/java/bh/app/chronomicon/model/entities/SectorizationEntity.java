@@ -4,129 +4,163 @@ package bh.app.chronomicon.model.entities;
 import bh.app.chronomicon.model.enums.Sector;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.sql.Timestamp;
+import java.time.Duration;
 
 @Entity
 @Table(name = "tb_sectorization")
 public class SectorizationEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
-    @OneToOne
-    @JoinColumn(name = "control_1_id")
-    private OperatorEntity control_1;
+    @ManyToOne
+    @JoinColumn(name="shift_id")
+    private ServiceShiftEntity operator_shift;
+    private Sector sectors;
+    private int console;
+    @ManyToOne
+    @JoinColumn(name="ctr_id")
+    private OperatorEntity ctr;
+    @ManyToOne
+    @JoinColumn(name="ass_id")
+    private OperatorEntity ass;
+    @ManyToOne
+    @JoinColumn(name="ctr_t_id")
+    private OperatorEntity ctr_trainee;
+    @ManyToOne
+    @JoinColumn(name="ass_t_id")
+    private OperatorEntity ass_trainee;
+    private Timestamp start_time;
+    private Timestamp end_time;
+    //TODO adicionar Entity Coordenador
+    public SectorizationEntity(String id, ServiceShiftEntity shift, Sector sectors, int console, OperatorEntity ctr,
+                               OperatorEntity ass, OperatorEntity ctr_trainee, OperatorEntity ass_trainee,
+                               Timestamp start_time, Timestamp end_time) {
+        this.id = id;
+        this.operator_shift = shift;
+        this.sectors = sectors;
+        this.console = console;
+        this.ctr = ctr;
+        this.ass = ass;
+        this.ctr_trainee = ctr_trainee;
+        this.ass_trainee = ass_trainee;
+        this.start_time = start_time;
+        this.end_time = end_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_1_id")
-    private OperatorEntity assistant_1;
+    public SectorizationEntity() {
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_1_id")
-    private OperatorEntity instructor_1;
+    public Timestamp getEnd_time() {
+        return end_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_1_id")
-    private TraineeEntity trainee_1;
-    private Sector  sector_1;
+    public void setEnd_time(Timestamp end_time) {
+        this.end_time = end_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_2_id")
-    private OperatorEntity control_2;
+    public Timestamp getStart_time() {
+        return start_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_2_id")
-    private OperatorEntity assistant_2;
+    public void setStart_time(Timestamp start_time) {
+        this.start_time = start_time;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_2_id")
-    private OperatorEntity instructor_2;
+    public OperatorEntity getAss_trainee() {
+        return ass_trainee;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_2_id")
-    private TraineeEntity trainee_2;
-    private Sector  sector_2;
+    public void setAss_trainee(OperatorEntity ass_trainee) {
+        this.ass_trainee = ass_trainee;
+    }
 
+    public OperatorEntity getCtr_trainee() {
+        return ctr_trainee;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_3_id")
-    private OperatorEntity control_3;
+    public void setCtr_trainee(OperatorEntity ctr_trainee) {
+        this.ctr_trainee = ctr_trainee;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_3_id")
-    private OperatorEntity assistant_3;
+    public OperatorEntity getAss() {
+        return ass;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_3_id")
-    private OperatorEntity instructor_3;
+    public void setAss(OperatorEntity ass) {
+        this.ass = ass;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_3_id")
-    private TraineeEntity trainee_3;
-    private Sector  sector_3;
+    public OperatorEntity getCtr() {
+        return ctr;
+    }
 
+    public void setCtr(OperatorEntity ctr) {
+        this.ctr = ctr;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_4_id")
-    private OperatorEntity control_4;
+    public int getConsole() {
+        return console;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_4_id")
-    private OperatorEntity assistant_4;
+    public void setConsole(int console) {
+        this.console = console;
+    }
+    public Sector getSectors() {
+        return sectors;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "instructor_4_id")
-    private OperatorEntity instructor_4;
+    public void setSectors(Sector sectors) {
+        this.sectors = sectors;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "trainee_4_id")
-    private TraineeEntity trainee_4;
-    private Sector  sector_4;
+    public ServiceShiftEntity getShift() {
+        return operator_shift;
+    }
 
+    public void setShift(ServiceShiftEntity shift) {
+        this.operator_shift = shift;
+    }
 
-    @OneToOne
-    @JoinColumn(name = "control_5_id")
-    private OperatorEntity control_5;
+    public String getId() {
+        return id;
+    }
+    public Duration getDuration(){
+        return Duration.between (start_time.toLocalDateTime (), end_time.toLocalDateTime ());
+    }
 
-    @OneToOne
-    @JoinColumn(name = "assistant_5_id")
-    private OperatorEntity assistant_5;
-
-    @OneToOne
-    @JoinColumn(name = "instructor_5_id")
-    private OperatorEntity instructor_5;
-
-    @OneToOne
-    @JoinColumn(name = "trainee_5_id")
-    private TraineeEntity trainee_5;
-    private Sector  sector_5;
-
-
-    @OneToOne
-    @JoinColumn(name = "control_6_id")
-    private OperatorEntity control_6;
-
-    @OneToOne
-    @JoinColumn(name = "assistant_6_id")
-    private OperatorEntity assistant_6;
-
-    @OneToOne
-    @JoinColumn(name = "instructor_6_id")
-    private OperatorEntity instructor_6;
-
-    @OneToOne
-    @JoinColumn(name = "trainee_6_id")
-    private TraineeEntity trainee_6;
-    private Sector  sector_6;
-
-    @OneToMany
-    @JoinColumn(name = "supervisors_id")
-    private List<SupervisorEntity> supervisor;
-
-    @OneToMany
-    @JoinColumn(name = "coordinator_id")
-    private List<OperatorEntity> coordinator;
-
-
+    @Override
+    public String toString() {
+        if(console==0){
+            return "Coordenador: " + ctr +
+                    ", Inicio: " + start_time.toLocalDateTime ()+
+                    ", Fim: " + end_time.toLocalDateTime ();
+        } else if (ctr_trainee != null) {
+            return  "Setores: " + sectors +
+                    ", Console " + console +
+                    ", Controle: " + ctr +
+                    ", Assistente: " + ass +
+                    ", Estagiario CTR" + ctr_trainee +
+                    ", Inicio: " + start_time.toLocalDateTime ()+
+                    ", Fim: " + end_time.toLocalDateTime ();
+        } else if (ass_trainee != null) {
+            return "Setores: " + sectors +
+                    ", Console " + console +
+                    ", Controle: " + ctr +
+                    ", Assistente: " + ass +
+                    ", Estagiario ASS" + ass_trainee +
+                    ", Inicio: " + start_time.toLocalDateTime () +
+                    ", Fim: " + end_time.toLocalDateTime ();
+        }
+        else{
+            return  "Setores: " + sectors +
+                    ", Console " + console +
+                    ", Controle: " + ctr +
+                    ", Assistente: " + ass +
+                    ", Inicio: " + start_time.toLocalDateTime ()+
+                    ", Fim: " + end_time.toLocalDateTime ();
+        }
+    }
 }
