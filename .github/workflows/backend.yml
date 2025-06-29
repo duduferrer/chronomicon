@@ -4,9 +4,6 @@ on:
   push:
     paths:
       - 'Backend/**'
-  pull_request:
-    paths:
-      - 'Backend/**'
 
 jobs:
   backend-checks:
