@@ -12,7 +12,12 @@ jobs:
   backend-checks:
     name: Build & Test Java Backend
     runs-on: ubuntu-latest
+    environment: development
 
+    env:
+      SPRING_PROFILES_ACTIVE: dev
+      API_JWT_SECRET: ${{ secrets.API_JWT_SECRET }}
+    
     defaults:
       run:
         working-directory: Backend
