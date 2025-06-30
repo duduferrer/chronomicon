@@ -8,6 +8,7 @@ import bh.app.chronomicon.model.entities.SystemUserEntity;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.repository.SystemUserRepository;
 import bh.app.chronomicon.security.JwtUtil;
+import bh.app.chronomicon.security.ValidPassword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    public void updatePassword(String token, AuthenticationDTO authenticationDTO, String newPassword){
+    public void updatePassword(String token, AuthenticationDTO authenticationDTO, @ValidPassword String newPassword){
 
         if(!jwtUtil.isTokenValid (token)){
             log.warn ("Tentativa de troca de senha com token invalido. {}", jwtUtil.getUsername (token));
@@ -97,5 +98,6 @@ public class AuthService implements UserDetailsService {
             throw new ServerException ("Erro ao atualizar senha.");
         }
     }
+
 
 }
