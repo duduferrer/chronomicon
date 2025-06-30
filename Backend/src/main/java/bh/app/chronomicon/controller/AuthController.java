@@ -57,7 +57,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
             @ApiResponse(responseCode = "403", description = "Credenciais nao encontradas."),
     })
-    public ResponseEntity login(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthenticationDTO authenticationDTO){
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken (
                 authenticationDTO.saram (), authenticationDTO.password ());
         Authentication auth = authenticationManager.authenticate (usernamePassword);
@@ -70,7 +70,7 @@ public class AuthController {
             @ApiResponse(responseCode = "201", description = "Usuario criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro ao criar usuário de sistema"),
     })
-    public ResponseEntity register(@RequestBody @Valid RegisterSystemUserDTO registerSystemUserDTO){
+    public ResponseEntity<String> register(@RequestBody @Valid RegisterSystemUserDTO registerSystemUserDTO){
         if(systemUserRepository.findUserBySaram (registerSystemUserDTO.saram ())!=null){
             log.warn ("Erro ao criar usuário, SARAM já cadastrado. SARAM: {}", registerSystemUserDTO.saram ());
             return ResponseEntity.status (HttpStatus.CONFLICT).body ("Já existe usuário com esse SARAM");
