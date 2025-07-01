@@ -38,7 +38,7 @@ import java.time.LocalDateTime;
 @RequestMapping(value = "api/v1/auth")
 @Tag(name = "Autenticação", description = "Operações relacionadas a criação e autenticação de usuários.")
 public class AuthController {
-    private static final Logger log = LoggerFactory.getLogger(ShiftEventsService.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
 
     @Autowired

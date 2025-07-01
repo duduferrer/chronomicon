@@ -1,6 +1,7 @@
 package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.AuthenticationDTO;
+import bh.app.chronomicon.dto.UpdatePasswordDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ForbiddenException;
 import bh.app.chronomicon.exception.ServerException;
@@ -32,7 +33,7 @@ public class AuthService implements UserDetailsService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    private static final Logger log = LoggerFactory.getLogger(OperatorService.class);
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
 
 
@@ -67,7 +68,7 @@ public class AuthService implements UserDetailsService {
         }
     }
 
-    public void updatePassword(String token, AuthenticationDTO authenticationDTO, @ValidPassword String newPassword){
+    public void updatePassword(String token, AuthenticationDTO authenticationDTO, UpdatePasswordDTO updatePasswordDTO){
 
         if(!jwtUtil.isTokenValid (token)){
             log.warn ("Tentativa de troca de senha com token invalido. {}", jwtUtil.getUsername (token));
@@ -89,7 +90,7 @@ public class AuthService implements UserDetailsService {
             throw new ForbiddenException ("Senha atual incorreta");
         }
 
-        systemUserEntity.setPassword (passwordEncoder.encode (newPassword));
+        systemUserEntity.setPassword (passwordEncoder.encode (updatePasswordDTO.newPassword ()));
 
         try{
             systemUserRepository.save (systemUserEntity);
@@ -98,6 +99,5 @@ public class AuthService implements UserDetailsService {
             throw new ServerException ("Erro ao atualizar senha.");
         }
     }
-
 
 }
