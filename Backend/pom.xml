@@ -12,7 +12,7 @@
 	<artifactId>chronomicon</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>chronomicon</name>
-	<description>Backend para o livro eletronico do APP-BH</description>
+	<description>Backend do livro eletronico do APP-BH</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -42,6 +42,11 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
 		<dependency>

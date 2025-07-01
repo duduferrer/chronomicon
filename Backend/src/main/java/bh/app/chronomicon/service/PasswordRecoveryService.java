@@ -61,4 +61,6 @@ public class PasswordRecoveryService {
         forgottenPasswordEntity.setUsed (true);
         forgottenPasswordRepository.save (forgottenPasswordEntity);
     }
+
+
 }
