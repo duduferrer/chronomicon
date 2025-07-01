@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 
     @ExceptionHandler(ForbiddenException.class)
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
                 exception.getMessage(),
                 LocalDateTime.now()
         );
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(NotActiveEventException.class)
