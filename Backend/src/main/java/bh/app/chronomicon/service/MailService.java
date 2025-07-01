@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
@@ -27,18 +28,18 @@ public class MailService {
     @Value ("${spring.mail.username}")
     private String senderMail;
 
-    public void sendPasswordRecoveryEmail(String receiverMail, String receiverName, String resetLink) throws MessagingException{
+    public void sendPasswordRecoveryEmail(String receiverMail, String receiverName, String resetLink) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = javaMailSender.createMimeMessage ();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper (message, true, "UTF-8");
         mimeMessageHelper.setTo(receiverMail);
         mimeMessageHelper.setSubject ("Recuperação de Senha");
-        mimeMessageHelper.setFrom (senderMail);
+        mimeMessageHelper.setFrom(senderMail, "TREM - APP BH");
         String htmlContent = loadResetPasswordTemplate (resetLink, receiverName);
         mimeMessageHelper.setText (htmlContent, true);
         javaMailSender.send (message);
     }
 
-    public String loadTemplate(String template) throws IOException{
+    private String loadTemplate(String template) throws IOException{
         ClassPathResource resource = new ClassPathResource ("templates/mail/"+template);
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader (resource.getInputStream(), StandardCharsets.UTF_8))) {
@@ -46,7 +47,7 @@ public class MailService {
         }
     }
 
-    public String loadResetPasswordTemplate(String resetLink, String name){
+    private String loadResetPasswordTemplate(String resetLink, String name){
         try{
             String template = loadTemplate ("PasswordRecovery.html");
             template = template.replace ("{{NOME}}", name);

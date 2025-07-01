@@ -1,6 +1,7 @@
 package bh.app.chronomicon.service;
 
 import bh.app.chronomicon.dto.AuthenticationDTO;
+import bh.app.chronomicon.dto.RecoverPasswordDTO;
 import bh.app.chronomicon.dto.UpdatePasswordDTO;
 import bh.app.chronomicon.dto.UserDTO;
 import bh.app.chronomicon.exception.ForbiddenException;
@@ -9,7 +10,7 @@ import bh.app.chronomicon.model.entities.SystemUserEntity;
 import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.repository.SystemUserRepository;
 import bh.app.chronomicon.security.JwtUtil;
-import bh.app.chronomicon.security.ValidPassword;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AuthService implements UserDetailsService {
@@ -51,6 +53,14 @@ public class AuthService implements UserDetailsService {
     public SystemUserEntity getSystemUser(String token){
         String saram = jwtUtil.getUsername (token);
         return systemUserRepository.findUserBySaram (saram);
+    }
+
+    public SystemUserEntity getUserByEmail(String email) throws UsernameNotFoundException{
+        return Optional.ofNullable(systemUserRepository.findUserByEmailAddress(email))
+                .orElseThrow(() -> {
+                    log.warn("Tentativa de recuperar senha do email {} fracassada. Usuário não encontrado.", email);
+                    return new UsernameNotFoundException("Usuário não encontrado.");
+                });
     }
 
     public void updateLastLogin(String token){
@@ -97,6 +107,15 @@ public class AuthService implements UserDetailsService {
         } catch (RuntimeException e) {
             log.error ("Erro ao Atualizar senha do usuário {}: {}", systemUserEntity.getSaram (), e.getMessage ());
             throw new ServerException ("Erro ao atualizar senha.");
+        }
+    }
+
+    public String extractToken(HttpServletRequest request){
+        String authHeader = request.getHeader ("Authorization");
+        if(authHeader==null || !authHeader.startsWith ("Bearer ")){
+            return null;
+        }else{
+            return authHeader.replace ("Bearer ","");
         }
     }
 

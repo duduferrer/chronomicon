@@ -1,6 +1,5 @@
 package bh.app.chronomicon.security;
 
-import bh.app.chronomicon.model.entities.SystemUserEntity;
 import bh.app.chronomicon.service.AuthService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

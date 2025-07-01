@@ -1,8 +1,5 @@
 package bh.app.chronomicon.security;
 
-import bh.app.chronomicon.dto.UserDTO;
-import bh.app.chronomicon.model.entities.UserEntity;
-import bh.app.chronomicon.repository.SystemUserRepository;
 import bh.app.chronomicon.service.OperatorService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -12,7 +9,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,12 +21,12 @@ public class JwtUtil {
     private static final Logger log = LoggerFactory.getLogger(OperatorService.class);
 
     @Value("${api.jwt.secret}")
-    private String JWTsecret;
+    private String JWTSecret;
     private Key key;
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(JWTsecret.getBytes());
+        this.key = Keys.hmacShaKeyFor(JWTSecret.getBytes());
     }
 
     private final long expiration = 1000*60*60*2; //2h expiraçao

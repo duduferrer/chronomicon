@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SystemUserRepository extends JpaRepository<SystemUserEntity, String> {
      SystemUserEntity findUserBySaram(String saram);
+
+     SystemUserEntity findUserByEmailAddress(String email);
 }

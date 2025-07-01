@@ -2,9 +2,8 @@ package bh.app.chronomicon.dto;
 
 import bh.app.chronomicon.security.ValidPassword;
 
-public record UpdatePasswordDTO(
+public record RecoverPasswordDTO(
         @ValidPassword
-        String newPassword,
-        String oldPassword
+        String newPassword
 ) {
 }
