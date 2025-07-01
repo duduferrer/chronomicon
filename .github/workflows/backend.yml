@@ -14,6 +14,9 @@ jobs:
     env:
       SPRING_PROFILES_ACTIVE: dev
       API_JWT_SECRET: ${{ secrets.API_JWT_SECRET }}
+      API_MAIL_PASSWORD: ${{secrets.API_MAIL_PASSWORD}}
+      API_MAIL_USERNAME: ${{secrets.API_MAIL_USERNAME}}
+      BASE_URL: ${{vars.BASE_URL}}
     
     defaults:
       run:

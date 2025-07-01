@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Service
 public class ServiceShiftService {
-    private static final Logger log = LoggerFactory.getLogger(OperatorService.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceShiftService.class);
 
     @Autowired
     ServiceShiftRepository shiftRepository;

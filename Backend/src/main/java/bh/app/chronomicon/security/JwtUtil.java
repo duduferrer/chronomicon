@@ -21,12 +21,12 @@ public class JwtUtil {
     private static final Logger log = LoggerFactory.getLogger(OperatorService.class);
 
     @Value("${api.jwt.secret}")
-    private String JWTsecret;
+    private String JWTSecret;
     private Key key;
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(JWTsecret.getBytes());
+        this.key = Keys.hmacShaKeyFor(JWTSecret.getBytes());
     }
 
     private final long expiration = 1000*60*60*2; //2h expiraçao

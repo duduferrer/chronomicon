@@ -29,7 +29,9 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/api-docs/**").permitAll ()
+                                "/api-docs/**",
+                                "/api/v*/auth/recuperar-senha",
+                                "/api/v*/auth/recuperar-senha/**").permitAll ()
                         .requestMatchers ("/admin/**").hasRole ("ADMIN")
                         .anyRequest ().authenticated ()
                 )
