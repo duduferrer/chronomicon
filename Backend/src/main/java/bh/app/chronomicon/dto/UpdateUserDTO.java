@@ -10,4 +10,6 @@ public record UpdateUserDTO(
         Boolean supervisor,
         Boolean instructor,
         Boolean trainee
-) {}
+) {
+
+}

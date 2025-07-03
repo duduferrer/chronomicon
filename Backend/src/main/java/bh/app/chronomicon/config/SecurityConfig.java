@@ -3,6 +3,7 @@ package bh.app.chronomicon.config;
 import bh.app.chronomicon.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,9 @@ public class SecurityConfig {
                                 "/api/v*/auth/recuperar-senha",
                                 "/api/v*/auth/recuperar-senha/**").permitAll ()
                         .requestMatchers ("/admin/**").hasRole ("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/staff").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/staff/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/staff/**").hasRole("ADMIN")
                         .anyRequest ().authenticated ()
                 )
                 //Configura sessao para ser stateless

@@ -84,6 +84,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Cria usuário no banco e retorna"),
             @ApiResponse(responseCode = "409", description = "Falha ao criar usuário"),
+            @ApiResponse(responseCode = "403", description = "Usuário sem permissoes necessarias"),
     })
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserDTO user){
@@ -123,7 +124,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
     })
     @PatchMapping(value = {"/{lpna}"})
-    public ResponseEntity<Void> updateUserStatus(@PathVariable String lpna, @RequestBody UpdateUserDTO user){
+    public ResponseEntity<Void> updateUserData(@PathVariable String lpna, @RequestBody UpdateUserDTO user){
         service.updateUser (lpna, user);
         return ResponseEntity.noContent().build();
     }
