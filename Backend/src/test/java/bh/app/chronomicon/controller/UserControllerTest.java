@@ -221,7 +221,7 @@ public class UserControllerTest {
         UserDTO userDTO = new UserDTO (new UserEntity (Rank.TERCEIRO_SGT, "EEEE", (short) 4, "Bertoto Roover", "Bertorto",
                 false, false, false, true));
         doNothing ().when(userService).activateUser ("EEEE");
-        mockMvc.perform(put ("/api/v1/staff/EEEE/status?active=true")
+        mockMvc.perform(put ("/api/v1/staff/admin/EEEE/status?active=true")
                         .contentType (MediaType.APPLICATION_JSON)
                         .with(csrf())
                 )
@@ -236,7 +236,7 @@ public class UserControllerTest {
         UserDTO userDTO = new UserDTO (new UserEntity (Rank.TERCEIRO_SGT, "EEEE", (short) 4, "Bertoto Roover", "Bertorto",
                 false, false, false, true));
         doNothing ().when(userService).activateUser ("EEEE");
-        mockMvc.perform(put ("/api/v1/staff/EEEE/status?active=true")
+        mockMvc.perform(put ("/api/v1/staff/admin/EEEE/status?active=true")
                         .contentType (MediaType.APPLICATION_JSON)
                         .with(csrf())
                 )
@@ -251,7 +251,7 @@ public class UserControllerTest {
                 false, false, false, true));
         UpdateUserDTO updateUserDTO = new UpdateUserDTO (null, null, null, "Bertoto", null, null, null);
         doNothing ().when(userService).updateUser ("EEEE", updateUserDTO);
-        mockMvc.perform(patch ("/api/v1/staff/EEEE")
+        mockMvc.perform(patch ("/api/v1/staff/admin/EEEE")
                         .contentType (MediaType.APPLICATION_JSON)
                         .content (objectMapper.writeValueAsString (updateUserDTO))
                         .with(csrf())
@@ -268,7 +268,7 @@ public class UserControllerTest {
                 false, false, false, true));
         UpdateUserDTO updateUserDTO = new UpdateUserDTO (null, null, null, "Bertoto", null, null, null);
         doNothing ().when(userService).updateUser ("EEEE", updateUserDTO);
-        mockMvc.perform(patch ("/api/v1/staff/EEEE")
+        mockMvc.perform(patch ("/api/v1/staff/admin/EEEE")
                         .contentType (MediaType.APPLICATION_JSON)
                         .content (objectMapper.writeValueAsString (updateUserDTO))
                         .with(csrf())

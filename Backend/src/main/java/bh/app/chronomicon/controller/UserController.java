@@ -108,7 +108,7 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Atualiza o status ativo do usuário de acordo com parametro da url"),
             @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
     })
-    @PutMapping(value = {"/{lpna}/status"})
+    @PutMapping(value = {"/admin/{lpna}/status"})
     public ResponseEntity<Void> updateUserStatus(@PathVariable String lpna, @RequestParam boolean active){
         if(active){
             service.activateUser (lpna);
@@ -123,7 +123,7 @@ public class UserController {
             @ApiResponse(responseCode = "204", description = "Atualiza dados do usuário"),
             @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
     })
-    @PatchMapping(value = {"/{lpna}"})
+    @PatchMapping(value = {"/admin/{lpna}"})
     public ResponseEntity<Void> updateUserData(@PathVariable String lpna, @RequestBody UpdateUserDTO user){
         service.updateUser (lpna, user);
         return ResponseEntity.noContent().build();

@@ -62,6 +62,7 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Login realizado com sucesso"),
             @ApiResponse(responseCode = "403", description = "Credenciais nao encontradas."),
+            @ApiResponse(responseCode = "400", description = "Erro no envio dos dados de login.")
     })
     public ResponseEntity<AuthResponseDTO> login(@RequestBody @Valid AuthenticationDTO authenticationDTO){
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken (

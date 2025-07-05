@@ -33,10 +33,9 @@ public class SecurityConfig {
                                 "/api-docs/**",
                                 "/api/v*/auth/recuperar-senha",
                                 "/api/v*/auth/recuperar-senha/**").permitAll ()
-                        .requestMatchers ("/admin/**").hasRole ("ADMIN")
+                        .requestMatchers ("api/v*/auth/admin/**").hasRole ("ADMIN")
+                        .requestMatchers ("api/v*/staff/admin/**").hasRole ("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/staff").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/staff/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/staff/**").hasRole("ADMIN")
                         .anyRequest ().authenticated ()
                 )
                 //Configura sessao para ser stateless
