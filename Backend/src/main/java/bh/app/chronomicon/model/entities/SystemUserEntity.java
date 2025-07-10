@@ -34,6 +34,7 @@ public class SystemUserEntity implements UserDetails {
     private String emailAddress;
     @Column(unique = true)
     private String saram;
+    private String fullName;
 
     public SystemUserEntity(){
 
@@ -96,7 +97,47 @@ public class SystemUserEntity implements UserDetails {
         this.isPoolCaster = isPoolCaster;
         this.isHiker = isHiker;
     }
-
+    
+    public SystemUserEntity(String id, Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram, String fullName) {
+        this.id = id;
+        this.role = role;
+        this.user = user;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.isActive = isActive;
+        this.last_login = last_login;
+        this.password = password;
+        this.isCaster = isCaster;
+        this.isPoolCaster = isPoolCaster;
+        this.isHiker = isHiker;
+        this.emailAddress = emailAddress;
+        this.saram = saram;
+        this.fullName = fullName;
+    }
+    public SystemUserEntity(Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram, String fullName) {
+        this.role = role;
+        this.user = user;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.isActive = isActive;
+        this.last_login = last_login;
+        this.password = password;
+        this.isCaster = isCaster;
+        this.isPoolCaster = isPoolCaster;
+        this.isHiker = isHiker;
+        this.emailAddress = emailAddress;
+        this.saram = saram;
+        this.fullName = fullName;
+    }
+    
+    public String getFullName() {
+        return fullName;
+    }
+    
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+    
     public String getId() {
         return id;
     }
