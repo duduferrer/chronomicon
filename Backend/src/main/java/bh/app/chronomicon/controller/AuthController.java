@@ -1,9 +1,8 @@
 package bh.app.chronomicon.controller;
 
 import bh.app.chronomicon.dto.*;
-import bh.app.chronomicon.exception.ServerException;
+import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.model.entities.SystemUserEntity;
-import bh.app.chronomicon.model.entities.UserEntity;
 import bh.app.chronomicon.repository.SystemUserRepository;
 import bh.app.chronomicon.security.JwtUtil;
 import bh.app.chronomicon.service.*;
@@ -22,15 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(value = "api/v1/auth")
@@ -44,10 +40,6 @@ public class AuthController {
     @Autowired
     SystemUserRepository systemUserRepository;
     @Autowired
-    UserService userService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
     JwtUtil jwtUtil;
     @Autowired
     PasswordRecoveryService passwordRecoveryService;
@@ -57,6 +49,8 @@ public class AuthController {
     String baseUrl;
     @Autowired
     AuthService authService;
+    @Autowired
+    SystemUserService systemUserService;
 
     @PostMapping("/login")
     @ApiResponses(value = {
@@ -75,39 +69,20 @@ public class AuthController {
     @PostMapping("/admin/cadastrar")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Usuario criado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro ao criar usuário de sistema"),
+            @ApiResponse(responseCode = "409", description = "Erro ao criar usuário"),
+            @ApiResponse(responseCode = "500", description = "Erro ao cadastrar usuário"),
     })
-    public ResponseEntity<String> register(@RequestBody @Valid RegisterSystemUserDTO registerSystemUserDTO){
-        if(systemUserRepository.findUserBySaram (registerSystemUserDTO.saram ())!=null){
-            log.warn ("Erro ao criar usuário, SARAM já cadastrado. SARAM: {}", registerSystemUserDTO.saram ());
+    public ResponseEntity<String> register(@RequestBody @Valid CreateUserDTO createUserDTO, HttpServletRequest request){
+        String token = authService.extractToken(request);
+        try{
+            SystemUserEntity systemUserEntity = systemUserService.registerSystemUser(createUserDTO);
+            URI location = URI.create("/api/v1/users/" + systemUserEntity.getId ());
+            return ResponseEntity.created (location).build ();
+        }catch(ConflictException e){
             return ResponseEntity.status (HttpStatus.CONFLICT).body ("Já existe usuário com esse SARAM");
+        }catch(RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar usuário.");
         }
-        Timestamp now = Timestamp.valueOf (LocalDateTime.now ());
-        String firstPassword = registerSystemUserDTO.lpna ()+registerSystemUserDTO.lpna ();
-        String encryptedPassword = passwordEncoder.encode (firstPassword);
-        UserEntity userEntity = userService.findUser (registerSystemUserDTO.lpna ());
-        SystemUserEntity systemUserEntity = new SystemUserEntity (
-                registerSystemUserDTO.role (),
-                userEntity,
-                now,
-                now,
-                true,
-                null,
-                encryptedPassword,
-                false,
-                false,
-                false,
-                registerSystemUserDTO.emailAddress (),
-                registerSystemUserDTO.saram ()
-        );
-        try {
-            systemUserRepository.save (systemUserEntity);
-        } catch (RuntimeException e) {
-            log.error ("Erro ao salvar novo usuário. {}", e.getMessage () );
-            throw new ServerException ("Erro ao salvar usuário.");
-        }
-        URI location = URI.create("/api/v1/users/" + systemUserEntity.getId ());
-        return ResponseEntity.created (location).build ();
     }
 
     @PostMapping("/recuperar-senha")
@@ -118,7 +93,7 @@ public class AuthController {
     })
     public ResponseEntity<HttpStatus> passwordRecoveryEmail(@RequestParam String email){
         String token = passwordRecoveryService.createPasswordRecoveryToken (email);
-        String name = systemUserRepository.findUserByEmailAddress (email).getUser ().getFull_name ();
+        String name = systemUserRepository.findUserByEmailAddress (email).getCoreUserInformation().getFullName();
         String resetLink = "http://"+baseUrl+"/api/v1/auth/recuperar-senha/action?token="+ URLEncoder.encode (token, StandardCharsets.UTF_8);
         try{
             mailService.sendPasswordRecoveryEmail (email, name, resetLink);

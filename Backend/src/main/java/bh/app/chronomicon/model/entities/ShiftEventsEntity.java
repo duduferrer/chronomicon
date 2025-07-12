@@ -26,10 +26,10 @@ public class ShiftEventsEntity {
     private Timestamp updated_at;
     @ManyToOne
     @JoinColumn(name="creator_lpna", referencedColumnName = "lpna_identifier")
-    private UserEntity created_by;
+    private AtcoEntity created_by;
     @ManyToOne
     @JoinColumn(name="updater_lpna", referencedColumnName = "lpna_identifier")
-    private UserEntity last_updated_by;
+    private AtcoEntity last_updated_by;
 
 
     public ShiftEventsEntity (){
@@ -56,7 +56,7 @@ public class ShiftEventsEntity {
         }
     }
 
-    public ShiftEventsEntity(ServiceShiftEntity operator_shift, EventType type, String details, Timestamp eventStart, Timestamp eventEnd, Timestamp created_at, Timestamp updated_at, UserEntity created_by, UserEntity last_updated_by) {
+    public ShiftEventsEntity(ServiceShiftEntity operator_shift, EventType type, String details, Timestamp eventStart, Timestamp eventEnd, Timestamp created_at, Timestamp updated_at, AtcoEntity created_by, AtcoEntity last_updated_by) {
         this.operator_shift = operator_shift;
         this.type = type;
         this.details = details;
@@ -88,19 +88,19 @@ public class ShiftEventsEntity {
         this.updated_at = updated_at;
     }
 
-    public UserEntity getCreated_by() {
+    public AtcoEntity getCreated_by() {
         return created_by;
     }
 
-    public void setCreated_by(UserEntity created_by) {
+    public void setCreated_by(AtcoEntity created_by) {
         this.created_by = created_by;
     }
 
-    public UserEntity getLast_updated_by() {
+    public AtcoEntity getLast_updated_by() {
         return last_updated_by;
     }
 
-    public void setLast_updated_by(UserEntity last_updated_by) {
+    public void setLast_updated_by(AtcoEntity last_updated_by) {
         this.last_updated_by = last_updated_by;
     }
 

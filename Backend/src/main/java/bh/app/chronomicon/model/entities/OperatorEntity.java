@@ -14,7 +14,7 @@ public class OperatorEntity {
 
     @ManyToOne
     @JoinColumn(name="lpna_identifier", referencedColumnName = "lpna_identifier")
-    private UserEntity user;
+    private AtcoEntity user;
 
     private Duration workload;
 
@@ -27,8 +27,8 @@ public class OperatorEntity {
     private ServiceShiftEntity service_shift;
 
 
-    public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift,
-                          boolean isSupervisor, boolean isTrainee, boolean isInstructor) {
+    public OperatorEntity(String id, AtcoEntity user, Duration workload, ShiftType serviceShift,
+						  boolean isSupervisor, boolean isTrainee, boolean isInstructor) {
         this.id = id;
         this.user = user;
         this.workload = workload;
@@ -38,7 +38,7 @@ public class OperatorEntity {
         this.isInstructor = isInstructor;
     }
 
-    public OperatorEntity(String id, UserEntity user, Duration workload, ShiftType serviceShift) {
+    public OperatorEntity(String id, AtcoEntity user, Duration workload, ShiftType serviceShift) {
         this.id = id;
         this.user = user;
         this.workload = workload;
@@ -49,8 +49,8 @@ public class OperatorEntity {
 
     }
 
-    public OperatorEntity(UserEntity user, Duration workload, ShiftType shift, boolean isSupervisor,
-                          boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift) {
+    public OperatorEntity(AtcoEntity user, Duration workload, ShiftType shift, boolean isSupervisor,
+						  boolean isTrainee, boolean isInstructor, ServiceShiftEntity serviceShift) {
         this.user = user;
         this.workload = workload;
         this.shift_type = shift;
@@ -60,11 +60,11 @@ public class OperatorEntity {
         this.service_shift = serviceShift;
     }
 
-    public UserEntity getUser() {
+    public AtcoEntity getUser() {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(AtcoEntity user) {
         this.user = user;
     }
 

@@ -1,6 +1,6 @@
 package bh.app.chronomicon.dto;
 
-import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.entities.AtcoEntity;
 import bh.app.chronomicon.model.enums.EventType;
 
 import java.sql.Timestamp;
@@ -11,6 +11,6 @@ public record UpdateShiftEventDTO(
         Timestamp eventStart,
         Timestamp eventEnd,
         Timestamp updated_at,
-        UserEntity last_updated_by
+        AtcoEntity last_updated_by
 ) {
 }

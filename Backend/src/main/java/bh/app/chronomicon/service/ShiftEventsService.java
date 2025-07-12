@@ -9,7 +9,7 @@ import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.mapper.ShiftEventMapper;
 import bh.app.chronomicon.model.entities.ServiceShiftEntity;
 import bh.app.chronomicon.model.entities.ShiftEventsEntity;
-import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.entities.AtcoEntity;
 import bh.app.chronomicon.model.enums.EventType;
 import bh.app.chronomicon.repository.ShiftEventsRepository;
 import org.slf4j.Logger;
@@ -30,14 +30,14 @@ public class ShiftEventsService {
     @Autowired
     private ServiceShiftService serviceShiftService;
     @Autowired
-    private UserService userService;
+    private AtcoService userService;
     @Autowired
     private ShiftEventMapper shiftEventMapper;
 
     public ShiftEventDTO createShiftEvent(int shiftID, EventType type, String details, Timestamp start, boolean isOngoing, String userLpna){
         Timestamp end = isOngoing ? null : start;
         Timestamp now = Timestamp.valueOf (LocalDateTime.now ());
-        UserEntity userEntity = userService.findUser(userLpna);
+        AtcoEntity userEntity = userService.findUser(userLpna);
         ServiceShiftEntity serviceShiftEntity = serviceShiftService.getServiceShiftByID (shiftID);
         ShiftEventsEntity shiftEventsEntity= new ShiftEventsEntity(serviceShiftEntity, type, details, start, end, now, now, userEntity, userEntity);
         try{
@@ -53,7 +53,7 @@ public class ShiftEventsService {
     public ShiftEventDTO endOpenedShiftEvent(String details, String eventID, Timestamp end, String userLpna){
         ShiftEventsEntity shiftEventsEntity = getShiftEventByID (eventID);
         Timestamp now = Timestamp.valueOf (LocalDateTime.now ());
-        UserEntity userEntity = userService.findUser(userLpna);
+        AtcoEntity userEntity = userService.findUser(userLpna);
         if(shiftEventsEntity.getEventEnd () == null){
             CloseShiftEventDTO closeShiftEventDTO = new CloseShiftEventDTO (details, end, userEntity, now);
             shiftEventMapper.closeShiftEventFromDTO (closeShiftEventDTO, shiftEventsEntity);
@@ -75,7 +75,7 @@ public class ShiftEventsService {
     public ShiftEventDTO updateShiftEvent(String eventID, EventType type, String details, Timestamp start, Timestamp end, boolean isOngoing, String userLpna){
         ShiftEventsEntity shiftEventsEntity = getShiftEventByID (eventID);
         Timestamp now = Timestamp.valueOf (LocalDateTime.now ());
-        UserEntity userEntity = userService.findUser(userLpna);
+        AtcoEntity userEntity = userService.findUser(userLpna);
         UpdateShiftEventDTO updateShiftEventDTO = new UpdateShiftEventDTO (type, details, start, end, now, userEntity);
         shiftEventMapper.updateShiftEventFromDTO (updateShiftEventDTO, shiftEventsEntity);
         try{

@@ -2,7 +2,7 @@ package bh.app.chronomicon.service;
 
 
 import bh.app.chronomicon.dto.UpdateShiftDTO;
-import bh.app.chronomicon.dto.UserDTO;
+import bh.app.chronomicon.dto.AtcoDTO;
 import bh.app.chronomicon.exception.ForbiddenException;
 import bh.app.chronomicon.exception.NotFoundException;
 import bh.app.chronomicon.exception.ServerException;
@@ -46,7 +46,7 @@ public class ServiceShiftService {
         return shiftEntity;
     }
 
-    public ServiceShiftEntity closeShift(int id, UserDTO activeUser){
+    public ServiceShiftEntity closeShift(int id, AtcoDTO activeUser){
         ServiceShiftEntity shiftEntity = getServiceShiftByID(id);
         shiftEntity.setClosed_by (activeUser.lpna_identifier ());
         shiftEntity.setClosing_time (Timestamp.valueOf (LocalDateTime.now ()));
@@ -61,7 +61,7 @@ public class ServiceShiftService {
         return shiftEntity;
     }
 
-    public ServiceShiftEntity invalidateShift(int id, UserDTO activeUser){
+    public ServiceShiftEntity invalidateShift(int id, AtcoDTO activeUser){
         ServiceShiftEntity shiftEntity = getServiceShiftByID(id);
         shiftEntity.setClosed_by (activeUser.lpna_identifier ());
         shiftEntity.setClosing_time (Timestamp.valueOf (LocalDateTime.now ()));
@@ -78,7 +78,7 @@ public class ServiceShiftService {
         return shiftEntity;
     }
 
-    public ServiceShiftEntity updateShiftAfterClose(int id, UserDTO activeUser, UpdateShiftDTO updateShiftDTO){
+    public ServiceShiftEntity updateShiftAfterClose(int id, AtcoDTO activeUser, UpdateShiftDTO updateShiftDTO){
         ServiceShiftEntity shiftEntity = getServiceShiftByID(id);
         String closedByLPNA = shiftEntity.getClosed_by ();
         if(!Objects.equals (closedByLPNA, activeUser.lpna_identifier ())){

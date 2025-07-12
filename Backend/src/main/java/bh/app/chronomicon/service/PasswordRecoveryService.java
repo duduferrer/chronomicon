@@ -45,7 +45,7 @@ public class PasswordRecoveryService {
             forgottenPasswordRepository.save (forgottenPasswordEntity);
             return forgottenPasswordEntity.getPasswordRefreshToken ();
         } catch (RuntimeException e) {
-            log.error ("Erro ao criar token para recuperar senha. ({}): {}", systemUserEntity.getSaram (), e.getMessage ());
+            log.error ("Erro ao criar token para recuperar senha. ({}): {}", systemUserEntity.getCoreUserInformation().getSaram (), e.getMessage ());
             throw new ServerException ("Erro ao criar token para recuperar senha.");
         }
     }
@@ -54,11 +54,11 @@ public class PasswordRecoveryService {
         ForgottenPasswordEntity forgottenPasswordEntity = forgottenPasswordRepository.findByPasswordRefreshToken (token)
                 .orElseThrow (()->new NotFoundException("Token inválido"));
         if(forgottenPasswordEntity.isUsed ()){
-            log.warn ("Token já usado para reset de senha, ({}, {})", forgottenPasswordEntity.getSystemUserEntity ().getSaram (), token);
+            log.warn ("Token já usado para reset de senha, ({}, {})", forgottenPasswordEntity.getSystemUserEntity ().getCoreUserInformation().getSaram (), token);
             throw new NotActiveEventException ("Token já usado.");
         }
         if(forgottenPasswordEntity.getExpiresAt ().isBefore (LocalDateTime.now ())){
-            log.warn ("Token reset de senha expirado, ({}, {}, {})", forgottenPasswordEntity.getSystemUserEntity ().getSaram (), token, forgottenPasswordEntity.getExpiresAt ().toString ());
+            log.warn ("Token reset de senha expirado, ({}, {}, {})", forgottenPasswordEntity.getSystemUserEntity ().getCoreUserInformation().getSaram (), token, forgottenPasswordEntity.getExpiresAt ().toString ());
             throw new NotActiveEventException ("Token expirado.");
         }
 

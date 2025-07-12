@@ -1,19 +1,22 @@
 package bh.app.chronomicon.service;
 
-import bh.app.chronomicon.dto.AuthenticationDTO;
-import bh.app.chronomicon.dto.RecoverPasswordDTO;
-import bh.app.chronomicon.dto.UpdatePasswordDTO;
-import bh.app.chronomicon.dto.UserDTO;
+import bh.app.chronomicon.dto.*;
+import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.ForbiddenException;
 import bh.app.chronomicon.exception.ServerException;
+import bh.app.chronomicon.model.entities.CoreUserInformationEntity;
 import bh.app.chronomicon.model.entities.SystemUserEntity;
-import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.entities.AtcoEntity;
+import bh.app.chronomicon.model.enums.Role;
+import bh.app.chronomicon.repository.CoreUserInformationRepository;
 import bh.app.chronomicon.repository.SystemUserRepository;
 import bh.app.chronomicon.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,7 +37,10 @@ public class AuthService implements UserDetailsService {
     JwtUtil jwtUtil;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    CoreUserInformationRepository coreUserInformationRepository;
 
+    
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
 
@@ -44,10 +50,10 @@ public class AuthService implements UserDetailsService {
         return systemUserRepository.findUserBySaram (username);
     }
 
-    public UserDTO getUser(String token){
+    public AtcoDTO getUser(String token){
         String saram = jwtUtil.getUsername(token);
-        UserEntity user = systemUserRepository.findUserBySaram (saram).getUser ();
-        return new UserDTO (user);
+        AtcoEntity user = systemUserRepository.findUserBySaram (saram).getAtco();
+        return new AtcoDTO(user);
     }
 
     public SystemUserEntity getSystemUser(String token){
@@ -71,7 +77,7 @@ public class AuthService implements UserDetailsService {
             systemUserRepository.save (systemUserEntity);
         }catch(RuntimeException e){
             log.error ("Erro ao atualizar hora do ultimo login {}, Hora do ultimo login: {}, Erro: {}",
-                    systemUserEntity.getSaram (),
+                    systemUserEntity.getCoreUserInformation().getSaram(),
                     now,
                     e.getMessage ());
             throw new ServerException ("Erro ao atualizar hora do ultimo login");
@@ -87,16 +93,16 @@ public class AuthService implements UserDetailsService {
 
         SystemUserEntity systemUserEntity = getSystemUser (token);
 
-        if(!Objects.equals (systemUserEntity.getSaram (), authenticationDTO.saram ())){
+        if(!Objects.equals (systemUserEntity.getCoreUserInformation().getSaram(), authenticationDTO.saram ())){
             log.warn ("Tentativa de troca de senha. SARAM Enviado: {}, SARAM TOKEN: {}. SARAM token diferente SARAM enviado",
                     authenticationDTO.saram (),
-                    systemUserEntity.getSaram ());
+                    systemUserEntity.getCoreUserInformation().getSaram());
             throw new ForbiddenException ("SARAM do token invalido");
         }
 
         String correctPassword = systemUserEntity.getPassword ();
         if(!passwordEncoder.matches (authenticationDTO.password (), correctPassword)){
-            log.warn ("Tentativa de troca de senha SARAM: {}, senha incorreta", systemUserEntity.getSaram ());
+            log.warn ("Tentativa de troca de senha SARAM: {}, senha incorreta", systemUserEntity.getCoreUserInformation().getSaram());
             throw new ForbiddenException ("Senha atual incorreta");
         }
 
@@ -105,7 +111,7 @@ public class AuthService implements UserDetailsService {
         try{
             systemUserRepository.save (systemUserEntity);
         } catch (RuntimeException e) {
-            log.error ("Erro ao Atualizar senha do usuário {}: {}", systemUserEntity.getSaram (), e.getMessage ());
+            log.error ("Erro ao Atualizar senha do usuário {}: {}", systemUserEntity.getCoreUserInformation().getSaram(), e.getMessage ());
             throw new ServerException ("Erro ao atualizar senha.");
         }
     }
@@ -116,6 +122,46 @@ public class AuthService implements UserDetailsService {
             return null;
         }else{
             return authHeader.replace ("Bearer ","");
+        }
+    }
+    
+    
+    public Role getAuthenticatedUserRole() {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SystemUserEntity) {
+            SystemUserEntity userEntity = (SystemUserEntity) authentication.getPrincipal();
+            return userEntity.getRole();
+        }
+        return null;
+        
+    }
+    
+    public String getActiveUserUsername(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+    
+    public CoreUserInformationEntity createCoreUser(CreateUserDTO createUserDTO) {
+        String saram = createUserDTO.coreUserInformationDTO().saram();
+        Optional<CoreUserInformationEntity> optionalCoreUserInformationEntity = coreUserInformationRepository.findBySaram(saram);
+        if(optionalCoreUserInformationEntity.isPresent()){
+            return optionalCoreUserInformationEntity.get();
+        }else{
+            CoreUserInformationEntity newUser = new CoreUserInformationEntity();
+            newUser.setEmailAddress(createUserDTO.coreUserInformationDTO().emailAddress());
+            newUser.setFullName(createUserDTO.coreUserInformationDTO().fullName());
+            newUser.setRank(createUserDTO.coreUserInformationDTO().rank());
+            newUser.setSaram(createUserDTO.coreUserInformationDTO().saram());
+            newUser.setService_name(createUserDTO.coreUserInformationDTO().serviceName());
+            newUser.setPhoneNumber(createUserDTO.coreUserInformationDTO().phoneNumber());
+            try{
+                CoreUserInformationEntity newUserCreated = coreUserInformationRepository.save(newUser);
+                log.info("Novo usuário salvo. ({})", newUserCreated.getId());
+                return newUserCreated;
+            }catch(RuntimeException e){
+                log.error("Erro ao salvar usuário({}). {}", newUser.getSaram(), e.getMessage());
+                throw new ServerException("Erro ao salvar usuário.");
+            }
         }
     }
 

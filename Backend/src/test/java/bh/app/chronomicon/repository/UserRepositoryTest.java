@@ -1,6 +1,7 @@
 package bh.app.chronomicon.repository;
 
-import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.entities.AtcoEntity;
+import bh.app.chronomicon.model.entities.CoreUserInformationEntity;
 import bh.app.chronomicon.model.enums.Rank;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
@@ -21,22 +22,45 @@ class UserRepositoryTest {
     EntityManager entityManager;
 
     @Autowired
-    UserRepository repository;
+    AtcoRepository repository;
     //    CREATE USER WITH ACTIVEUSER To be defined
-    private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
-                                  boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
-        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
-                instructor, trainee, activeUser);
-        this.entityManager.persist(user);
-        return user;
+    private AtcoEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+								  boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
+        CoreUserInformationEntity coreUserInformation = new CoreUserInformationEntity();
+        coreUserInformation.setRank(rank);
+        coreUserInformation.setFullName(full_name);
+        coreUserInformation.setService_name(service_name);
+        this.entityManager.persist(coreUserInformation);
+        AtcoEntity atco = new AtcoEntity();
+        atco.setSupervisor(supervisor);
+        atco.setInstructor(instructor);
+        atco.setTrainee(trainee);
+        atco.setHierarchy(hierarchy);
+        atco.setLpna_identifier(lpna_identifier);
+        atco.setActive(activeUser);
+        atco.setCoreUserInformationEntity(coreUserInformation);
+        this.entityManager.persist(atco);
+        entityManager.flush();
+        return atco;
     }
     //    CREATE USER WITH ACTIVEUSER TRUE
-    private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
-                                  boolean supervisor, boolean instructor, boolean trainee){
-        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
-                instructor, trainee, true);
-        this.entityManager.persist(user);
-        return user;
+    private AtcoEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+								  boolean supervisor, boolean instructor, boolean trainee){
+        CoreUserInformationEntity coreUserInformation = new CoreUserInformationEntity();
+        coreUserInformation.setRank(rank);
+        coreUserInformation.setFullName(full_name);
+        coreUserInformation.setService_name(service_name);
+        this.entityManager.persist(coreUserInformation);
+        AtcoEntity atco = new AtcoEntity();
+        atco.setSupervisor(supervisor);
+        atco.setInstructor(instructor);
+        atco.setTrainee(trainee);
+        atco.setHierarchy(hierarchy);
+        atco.setLpna_identifier(lpna_identifier);
+        atco.setCoreUserInformationEntity(coreUserInformation);
+        this.entityManager.persist(atco);
+        entityManager.flush();
+        return atco;
     }
 
 
@@ -76,11 +100,11 @@ class UserRepositoryTest {
                 true, true, true);
         createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
                 true, true, false);
-        List<UserEntity> result =  repository.findSupsOrderByHierarchy();
+        List<AtcoEntity> result =  repository.findSupsOrderByHierarchy();
         assertEquals(3, result.size());
-        assertEquals("Kyle", result.get(0).getService_name());
-        assertEquals("Butters", result.get(1).getService_name());
-        assertEquals("Cartman", result.get(2).getService_name());
+        assertEquals("Kyle", result.get(0).getCoreUserInformationEntity().getService_name());
+        assertEquals("Butters", result.get(1).getCoreUserInformationEntity().getService_name());
+        assertEquals("Cartman", result.get(2).getCoreUserInformationEntity().getService_name());
     }
 
     @Test
@@ -94,11 +118,11 @@ class UserRepositoryTest {
                 false, false, true);
         createUser(Rank.TERCEIRO_SGT,  "AABB", (short) 0, "Kyle Broflovsky", "Kyle",
                 true, false, false);
-        List<UserEntity> result = repository.findActiveUsersOrderByHierarchy();
+        List<AtcoEntity> result = repository.findActiveUsersOrderByHierarchy();
         assertEquals(3, result.size());
-        assertEquals("Kyle", result.get(0).getService_name());
-        assertEquals("Cartman", result.get(1).getService_name());
-        assertEquals("Stanley Marsh", result.get(2).getService_name());
+        assertEquals("Kyle", result.get(0).getCoreUserInformationEntity().getService_name());
+        assertEquals("Cartman", result.get(1).getCoreUserInformationEntity().getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getCoreUserInformationEntity().getService_name());
     }
 
     @Test
@@ -114,11 +138,11 @@ class UserRepositoryTest {
                 true, false, false);
         createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
                 true, true, false);
-        List<UserEntity> result = repository.findInstsOrderByHierarchy();
+        List<AtcoEntity> result = repository.findInstsOrderByHierarchy();
         assertEquals(3, result.size());
-        assertEquals("Butters", result.get(0).getService_name());
-        assertEquals("Cartman", result.get(1).getService_name());
-        assertEquals("Stanley Marsh", result.get(2).getService_name());
+        assertEquals("Butters", result.get(0).getCoreUserInformationEntity().getService_name());
+        assertEquals("Cartman", result.get(1).getCoreUserInformationEntity().getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getCoreUserInformationEntity().getService_name());
     }
 
     @Test
@@ -134,11 +158,11 @@ class UserRepositoryTest {
                 true, false, false);
         createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
                 true, false, true);
-        List<UserEntity> result = repository.findTraineesOrderByHierarchy();
+        List<AtcoEntity> result = repository.findTraineesOrderByHierarchy();
         assertEquals(3, result.size());
-        assertEquals("Butters", result.get(0).getService_name());
-        assertEquals("Cartman", result.get(1).getService_name());
-        assertEquals("Stanley Marsh", result.get(2).getService_name());
+        assertEquals("Butters", result.get(0).getCoreUserInformationEntity().getService_name());
+        assertEquals("Cartman", result.get(1).getCoreUserInformationEntity().getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getCoreUserInformationEntity().getService_name());
     }
 
     @Test
@@ -156,37 +180,37 @@ class UserRepositoryTest {
                 true, true, true);
         createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
                 false, false, false);
-        List<UserEntity> result = repository.findOnlyOpsOrderByHierarchy();
+        List<AtcoEntity> result = repository.findOnlyOpsOrderByHierarchy();
         assertEquals(3, result.size());
-        assertEquals("Butters", result.get(0).getService_name());
-        assertEquals("Cartman", result.get(1).getService_name());
-        assertEquals("Stanley Marsh", result.get(2).getService_name());
+        assertEquals("Butters", result.get(0).getCoreUserInformationEntity().getService_name());
+        assertEquals("Cartman", result.get(1).getCoreUserInformationEntity().getService_name());
+        assertEquals("Stanley Marsh", result.get(2).getCoreUserInformationEntity().getService_name());
     }
 
     @Test
     @DisplayName("Should get a user by userID")
     void findUserById() {
-         UserEntity user = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+         AtcoEntity user = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
                 false, false, false);
          Long userID = user.getId();
-         UserEntity result = repository.findUserById(userID);
-         assertEquals("Butters", result.getService_name());
+         AtcoEntity result = repository.findUserById(userID);
+         assertEquals("Butters", result.getCoreUserInformationEntity().getService_name());
     }
 
     @Test
     @DisplayName("Should get a user by lpna identifier")
     void findUserByLPNA() {
-        UserEntity user = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
+        AtcoEntity user = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 2, "Butters", "Butters",
                 false, false, false);
         String userLPNA = user.getLpna_identifier();
-        UserEntity result = repository.findUserByLPNA(userLPNA);
-        assertEquals("Butters", result.getService_name());
+        AtcoEntity result = repository.findUserByLPNA(userLPNA);
+        assertEquals("Butters", result.getCoreUserInformationEntity().getService_name());
     }
 
     @Test
     @DisplayName("Search if there is already a user created with this Hierarchy and return true")
     void existsByHierarchySuccess() {
-        UserEntity user = createUser(Rank.TERCEIRO_SGT, "AAAA", (short) 0, "Bruce Wayne", "Wayne",
+        AtcoEntity user = createUser(Rank.TERCEIRO_SGT, "AAAA", (short) 0, "Bruce Wayne", "Wayne",
                 true, true, true, true);
 
         boolean result = repository.existsByHierarchy(user.getHierarchy());
@@ -195,7 +219,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Search if there is already a user created with this Hierarchy and return false")
     void existsByHierarchyFail() {
-        UserEntity user = createUser(Rank.SEGUNDO_SGT,  "BBBB", (short) 1, "Clark Kent", "Kent",
+        AtcoEntity user = createUser(Rank.SEGUNDO_SGT,  "BBBB", (short) 1, "Clark Kent", "Kent",
                 true, false, true);
         boolean result = repository.existsByHierarchy((short)0);
         assertFalse(result);
@@ -204,18 +228,18 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Shift hierarchy of all users between target and 999")
     void shiftActiveUsersHierarchy() {
-        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+        AtcoEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
                 true, false, true);
-        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
+        AtcoEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
                 true, false, true);
-        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 3, "Barry Allen", "Flash",
+        AtcoEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 3, "Barry Allen", "Flash",
                 true, false, true);
-        UserEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1000, "Chapolin Colorado", "Chapolin Colorado",
+        AtcoEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1000, "Chapolin Colorado", "Chapolin Colorado",
                 true, false, true);
         repository.shiftActiveUsersHierarchy(user2.getHierarchy());
         entityManager.flush();
         entityManager.clear();
-        List<UserEntity> users = repository.findActiveUsersOrderByHierarchy();
+        List<AtcoEntity> users = repository.findActiveUsersOrderByHierarchy();
         assertEquals(1, users.get(0).getHierarchy());
         assertEquals(3, users.get(1).getHierarchy());
         assertEquals(4, users.get(2).getHierarchy());
@@ -225,19 +249,19 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Shift hierarchy of all users between target and over 1000")
     void shiftInactiveUsersHierarchy() {
-        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+        AtcoEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
                 true, false, true);
-        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 1001, "John Stewart", "Lanterna Verde",
+        AtcoEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 1001, "John Stewart", "Lanterna Verde",
                 true, false, true);
-        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 1002, "Barry Allen", "Flash",
+        AtcoEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 1002, "Barry Allen", "Flash",
                 true, false, true);
-        UserEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1003, "Chapolin Colorado", "Chapolin Colorado",
+        AtcoEntity user4 = createUser(Rank.SEGUNDO_SGT,  "DDDD", (short) 1003, "Chapolin Colorado", "Chapolin Colorado",
                 true, false, true);
         repository.shiftInactiveUsersHierarchy(user2.getHierarchy());
         entityManager.flush();
         entityManager.clear();
 
-        List<UserEntity> users = repository.findActiveUsersOrderByHierarchy();
+        List<AtcoEntity> users = repository.findActiveUsersOrderByHierarchy();
         assertEquals(1, users.get(0).getHierarchy());
         assertEquals(1002, users.get(1).getHierarchy());
         assertEquals(1003, users.get(2).getHierarchy());
@@ -248,7 +272,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Should activate an inactive user")
     void activateUser() {
-        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+        AtcoEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
                 true, false, true, false);
         repository.activateUser(user.getLpna_identifier());
         entityManager.flush();
@@ -260,7 +284,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Should deactivate an active user")
     void deactivateUser() {
-        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+        AtcoEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
             true, false, true, true);
         repository.deactivateUser(user.getLpna_identifier());
         entityManager.flush();
@@ -273,7 +297,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Should update user hierarchy searching by LPNA identifier")
     void updateUserHierarchy() {
-        UserEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+        AtcoEntity user = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
                 true, false, true, false);
         repository.updateUserHierarchy((short)7, "AAAA");
         entityManager.flush();
@@ -285,22 +309,22 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Should get a list of users from same rank, ordered by hierarchy")
     void getUsersOrderedByLowestHierarchyFromRank(){
-        UserEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
+        AtcoEntity user1 = createUser(Rank.CAPITAO,  "AAAA", (short) 1, "Bruce Banner", "Hulk",
                 true, false, true);
-        UserEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
+        AtcoEntity user2 = createUser(Rank.TERCEIRO_SGT,  "BBBB", (short) 2, "John Stewart", "Lanterna Verde",
                 true, false, true);
-        UserEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 4, "Barry Allen", "Flash",
+        AtcoEntity user3 = createUser(Rank.TERCEIRO_SGT,  "CCCC", (short) 4, "Barry Allen", "Flash",
                 true, false, true);
-        UserEntity user4 = createUser(Rank.TERCEIRO_SGT,  "DDDD", (short) 3, "Chapolin Colorado", "Chapolin Colorado",
+        AtcoEntity user4 = createUser(Rank.TERCEIRO_SGT,  "DDDD", (short) 3, "Chapolin Colorado", "Chapolin Colorado",
                 true, false, true);
-        UserEntity user5 = createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 5, "Wolverine", "Vo Verine",
+        AtcoEntity user5 = createUser(Rank.TERCEIRO_SGT,  "EEEE", (short) 5, "Wolverine", "Vo Verine",
                 true, false, true, false);
         entityManager.flush();
         entityManager.clear();
-        List<UserEntity> userList = repository.getUsersOrderedByLowestHierarchyFromRank(Rank.TERCEIRO_SGT);
-        assertEquals("Flash", userList.get(0).getService_name());
-        assertEquals("Chapolin Colorado", userList.get(1).getService_name());
-        assertEquals("Lanterna Verde", userList.get(2).getService_name());
+        List<AtcoEntity> userList = repository.getUsersOrderedByLowestHierarchyFromRank(Rank.TERCEIRO_SGT);
+        assertEquals("Flash", userList.get(0).getCoreUserInformationEntity().getService_name());
+        assertEquals("Chapolin Colorado", userList.get(1).getCoreUserInformationEntity().getService_name());
+        assertEquals("Lanterna Verde", userList.get(2).getCoreUserInformationEntity().getService_name());
     }
 
 
