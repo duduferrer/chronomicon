@@ -6,7 +6,7 @@ import bh.app.chronomicon.exception.ServerException;
 import bh.app.chronomicon.mapper.OperatorMapper;
 import bh.app.chronomicon.model.entities.OperatorEntity;
 import bh.app.chronomicon.model.entities.ServiceShiftEntity;
-import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.entities.AtcoEntity;
 import bh.app.chronomicon.model.enums.ShiftType;
 import bh.app.chronomicon.model.enums.WorkloadOperation;
 import bh.app.chronomicon.repository.OperatorRepository;
@@ -26,7 +26,7 @@ public class OperatorService {
     OperatorRepository operatorRepository;
 
     @Autowired
-    UserService userService;
+    AtcoService userService;
 
     @Autowired
     OperatorMapper operatorMapper;
@@ -36,8 +36,8 @@ public class OperatorService {
 
     public CreateOperatorDTO createOperator(String lpna, ShiftType op_shift, boolean isSupervisor,
                                             boolean isTrainee, boolean isInstructor, int serviceShiftID){
-       UserDTO userDTO = userService.findUserByLPNAReturnDTO (lpna);
-       UserEntity user = new UserEntity (userDTO);
+        AtcoEntity user  = userService.findUser (lpna);
+        AtcoDTO atcoDTO = new AtcoDTO(user);
        ServiceShiftEntity serviceShift = serviceShiftService.getServiceShiftByID (serviceShiftID);
 
        try {
@@ -45,7 +45,7 @@ public class OperatorService {
                    isTrainee, isInstructor, serviceShift);
            operatorRepository.save(operator);
            log.info ("Operador {} criado com sucesso no turno {}", lpna, serviceShift.getId ());
-           return new CreateOperatorDTO(userDTO, op_shift, operator.getId (), isSupervisor, isTrainee, isInstructor);
+           return new CreateOperatorDTO(atcoDTO, op_shift, operator.getId (), isSupervisor, isTrainee, isInstructor);
        }catch (RuntimeException e){
            log.error ("Erro ao cadastrar "+ lpna +"no turno "+ serviceShift.getId () +" Erro: " + e );
            throw new ServerException ("Erro ao cadastrar " + lpna + " no turno " + serviceShift.getId ());

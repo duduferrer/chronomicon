@@ -20,8 +20,11 @@ public class SystemUserEntity implements UserDetails {
     private Role role;
 
     @OneToOne
-    @JoinColumn(name = "lpna_identifier", referencedColumnName = "lpna_identifier")
-    private UserEntity user;
+    @JoinColumn(name = "id")
+    private AtcoEntity atco;
+    @OneToOne
+    @JoinColumn(name = "id")
+    private CoreUserInformationEntity coreUserInformationEntity;
     private Timestamp created_at;
     private Timestamp updated_at;
     private boolean isActive = true;
@@ -30,64 +33,18 @@ public class SystemUserEntity implements UserDetails {
     private boolean isCaster=false;
     private boolean isPoolCaster=false;
     private boolean isHiker=false;
-    @Column(unique = true)
-    private String emailAddress;
-    @Column(unique = true)
-    private String saram;
-    private String fullName;
+
+
 
     public SystemUserEntity(){
 
     }
-
-    public SystemUserEntity(String id, Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram) {
+    
+    public SystemUserEntity(String id, Role role, AtcoEntity atco, CoreUserInformationEntity coreUserInformationEntity, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
         this.id = id;
         this.role = role;
-        this.user = user;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.isActive = isActive;
-        this.last_login = last_login;
-        this.password = password;
-        this.isCaster = isCaster;
-        this.isPoolCaster = isPoolCaster;
-        this.isHiker = isHiker;
-        this.emailAddress = emailAddress;
-        this.saram = saram;
-    }
-
-    public SystemUserEntity(Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram) {
-        this.role = role;
-        this.user = user;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.isActive = isActive;
-        this.last_login = last_login;
-        this.password = password;
-        this.isCaster = isCaster;
-        this.isPoolCaster = isPoolCaster;
-        this.isHiker = isHiker;
-        this.emailAddress = emailAddress;
-        this.saram = saram;
-    }
-
-    public SystemUserEntity(Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
-        this.role = role;
-        this.user = user;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.isActive = isActive;
-        this.last_login = last_login;
-        this.password = password;
-        this.isCaster = isCaster;
-        this.isPoolCaster = isPoolCaster;
-        this.isHiker = isHiker;
-    }
-
-    public SystemUserEntity(String id, Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
-        this.id = id;
-        this.role = role;
-        this.user = user;
+        this.atco = atco;
+        this.coreUserInformationEntity = coreUserInformationEntity;
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.isActive = isActive;
@@ -98,10 +55,37 @@ public class SystemUserEntity implements UserDetails {
         this.isHiker = isHiker;
     }
     
-    public SystemUserEntity(String id, Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram, String fullName) {
+    public SystemUserEntity(Role role, AtcoEntity atco, CoreUserInformationEntity coreUserInformationEntity, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
+        this.role = role;
+        this.atco = atco;
+        this.coreUserInformationEntity = coreUserInformationEntity;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.isActive = isActive;
+        this.last_login = last_login;
+        this.password = password;
+        this.isCaster = isCaster;
+        this.isPoolCaster = isPoolCaster;
+        this.isHiker = isHiker;
+    }
+    
+    public SystemUserEntity(Role role, AtcoEntity atco, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
+        this.role = role;
+        this.atco = atco;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+        this.isActive = isActive;
+        this.last_login = last_login;
+        this.password = password;
+        this.isCaster = isCaster;
+        this.isPoolCaster = isPoolCaster;
+        this.isHiker = isHiker;
+    }
+
+    public SystemUserEntity(String id, Role role, AtcoEntity atco, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker) {
         this.id = id;
         this.role = role;
-        this.user = user;
+        this.atco = atco;
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.isActive = isActive;
@@ -110,33 +94,8 @@ public class SystemUserEntity implements UserDetails {
         this.isCaster = isCaster;
         this.isPoolCaster = isPoolCaster;
         this.isHiker = isHiker;
-        this.emailAddress = emailAddress;
-        this.saram = saram;
-        this.fullName = fullName;
-    }
-    public SystemUserEntity(Role role, UserEntity user, Timestamp created_at, Timestamp updated_at, boolean isActive, Timestamp last_login, String password, boolean isCaster, boolean isPoolCaster, boolean isHiker, String emailAddress, String saram, String fullName) {
-        this.role = role;
-        this.user = user;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-        this.isActive = isActive;
-        this.last_login = last_login;
-        this.password = password;
-        this.isCaster = isCaster;
-        this.isPoolCaster = isPoolCaster;
-        this.isHiker = isHiker;
-        this.emailAddress = emailAddress;
-        this.saram = saram;
-        this.fullName = fullName;
     }
     
-    public String getFullName() {
-        return fullName;
-    }
-    
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
     
     public String getId() {
         return id;
@@ -150,12 +109,12 @@ public class SystemUserEntity implements UserDetails {
         this.role = role;
     }
 
-    public UserEntity getUser() {
-        return user;
+    public AtcoEntity getAtco() {
+        return atco;
     }
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    public void setAtco(AtcoEntity atco) {
+        this.atco = atco;
     }
 
     public Timestamp getCreated_at() {
@@ -201,7 +160,7 @@ public class SystemUserEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return saram;
+        return coreUserInformationEntity.getSaram();
     }
 
     @Override
@@ -251,20 +210,12 @@ public class SystemUserEntity implements UserDetails {
     public void setHiker(boolean hiker) {
         isHiker = hiker;
     }
-
-    public String getEmailAddress() {
-        return emailAddress;
+    
+    public CoreUserInformationEntity getCoreUserInformation() {
+        return coreUserInformationEntity;
     }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public String getSaram() {
-        return saram;
-    }
-
-    public void setSaram(String saram) {
-        this.saram = saram;
+    
+    public void setCoreUserInformation(CoreUserInformationEntity coreUserInformationEntity) {
+        this.coreUserInformationEntity = coreUserInformationEntity;
     }
 }

@@ -1,52 +1,88 @@
 package bh.app.chronomicon.service;
 
-import bh.app.chronomicon.dto.CreateUserDTO;
-import bh.app.chronomicon.dto.UpdateUserDTO;
+import bh.app.chronomicon.dto.*;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.NotFoundException;
-import bh.app.chronomicon.model.entities.UserEntity;
+import bh.app.chronomicon.model.entities.AtcoEntity;
+import bh.app.chronomicon.model.entities.CoreUserInformationEntity;
 import bh.app.chronomicon.model.enums.Rank;
-import bh.app.chronomicon.repository.UserRepository;
+import bh.app.chronomicon.model.enums.Role;
+import bh.app.chronomicon.repository.AtcoRepository;
+import bh.app.chronomicon.repository.CoreUserInformationRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class UserServiceTest {
 
     @Autowired
-    private UserService userService;
+    private AtcoService userService;
 
     @Autowired
-    private UserRepository userRepository;
+    private AtcoRepository atcoRepository;
 
     @Autowired
     private EntityManager entityManager;
+    
+    @Autowired
+    private CoreUserInformationRepository coreUserInformationRepository;
+    
+//    @MockitoBean
+//    private AuthService authService;
+
 
     //    CREATE USER WITH ACTIVEUSER To be defined
-    private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
-                                  boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
-        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
-                instructor, trainee, activeUser);
-        this.userRepository.save(user);
-        return user;
+    private AtcoEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+								  boolean supervisor, boolean instructor, boolean trainee, boolean activeUser){
+        CoreUserInformationEntity coreUserInformation = new CoreUserInformationEntity();
+        coreUserInformation.setRank(rank);
+        coreUserInformation.setFullName(full_name);
+        coreUserInformation.setService_name(service_name);
+        coreUserInformationRepository.save(coreUserInformation);
+        AtcoEntity atco = new AtcoEntity();
+        atco.setSupervisor(supervisor);
+        atco.setInstructor(instructor);
+        atco.setTrainee(trainee);
+        atco.setHierarchy(hierarchy);
+        atco.setLpna_identifier(lpna_identifier);
+        atco.setActive(activeUser);
+        atco.setCoreUserInformationEntity(coreUserInformation);
+        AtcoEntity savedAtco = atcoRepository.save(atco);
+        return savedAtco;
     }
     //    CREATE USER WITH ACTIVEUSER TRUE
-    private UserEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
-                                  boolean supervisor, boolean instructor, boolean trainee){
-        UserEntity user = new UserEntity (rank, lpna_identifier, hierarchy, full_name, service_name, supervisor,
-                instructor, trainee, true);
-        this.userRepository.save(user);
-        return user;
+    private AtcoEntity createUser(Rank rank, String lpna_identifier, short hierarchy, String full_name, String service_name,
+								  boolean supervisor, boolean instructor, boolean trainee){
+        CoreUserInformationEntity coreUserInformation = new CoreUserInformationEntity();
+        coreUserInformation.setRank(rank);
+        coreUserInformation.setFullName(full_name);
+        coreUserInformation.setService_name(service_name);
+        coreUserInformationRepository.save(coreUserInformation);
+        AtcoEntity atco = new AtcoEntity();
+        atco.setSupervisor(supervisor);
+        atco.setInstructor(instructor);
+        atco.setTrainee(trainee);
+        atco.setHierarchy(hierarchy);
+        atco.setLpna_identifier(lpna_identifier);
+        atco.setCoreUserInformationEntity(coreUserInformation);
+        AtcoEntity savedAtco = atcoRepository.save(atco);
+        return savedAtco;
     }
 
     @Test
@@ -64,7 +100,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, false, true, false);
 
-         List<bh.app.chronomicon.dto.UserDTO> supsList = userService.findSupervisors();
+         List<AtcoDTO> supsList = userService.findSupervisors();
 
          assertEquals(3, supsList.size());
          assertEquals("Luffy", supsList.get(0).service_name());
@@ -88,7 +124,7 @@ class UserServiceTest {
                 true, false, true);
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, false, true, false);
-        List<bh.app.chronomicon.dto.UserDTO> userList = userService.findUsers();
+        List<AtcoDTO> userList = userService.findUsers();
 
         assertEquals(4, userList.size());
         assertEquals("Luffy", userList.get(0).service_name());
@@ -112,7 +148,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, true, true, false);
 
-        List<bh.app.chronomicon.dto.UserDTO> instList = userService.findInstructors();
+        List<AtcoDTO> instList = userService.findInstructors();
 
         assertEquals(3, instList.size());
         assertEquals("Luffy", instList.get(0).service_name());
@@ -135,7 +171,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 true, false, true, false);
 
-        List<bh.app.chronomicon.dto.UserDTO> traineesList = userService.findTrainees();
+        List<AtcoDTO> traineesList = userService.findTrainees();
 
         assertEquals(3, traineesList.size());
         assertEquals("Zoro", traineesList.get(0).service_name());
@@ -159,7 +195,7 @@ class UserServiceTest {
         createUser(Rank.SEGUNDO_SGT,  "EEEE", (short) 4, "Gol D Roger", "G.D. Roger",
                 false, false, false, false);
 
-        List<bh.app.chronomicon.dto.UserDTO> operatorsList = userService.findOnlyOperators();
+        List<AtcoDTO> operatorsList = userService.findOnlyOperators();
 
         assertEquals(3, operatorsList.size());
         assertEquals("Zoro", operatorsList.get(0).service_name());
@@ -171,9 +207,9 @@ class UserServiceTest {
     @Transactional
     @DisplayName("Should find user passing ID as parameter")
     void findUserById() {
-        UserEntity createdUser = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
+        AtcoEntity createdUser = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-        bh.app.chronomicon.dto.UserDTO foundUser = userService.findUserById(createdUser.getId());
+        AtcoDTO foundUser = userService.findUserById(createdUser.getId());
         assertEquals("N. Uzumaki", foundUser.service_name());
     }
 
@@ -183,7 +219,10 @@ class UserServiceTest {
     void createNewUserSameLPNA() {
         createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-        CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, false, false, false);
+        CoreUserInformationDTO coreUserInformationDTO = new CoreUserInformationDTO("teste@teste.com", "1234567", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, "00000000000");
+        CreateAtcoDTO createAtcoDTO = new CreateAtcoDTO("ZZZZ", false, false, false);
+        CreateSystemUserDTO createSystemUserDTO = new CreateSystemUserDTO(Role.USER);
+        CreateUserDTO userDTO = new CreateUserDTO(coreUserInformationDTO, createAtcoDTO,createSystemUserDTO);
         assertThrows(ConflictException.class, ()->{
             userService.createNewUser(userDTO);
         } );
@@ -194,23 +233,32 @@ class UserServiceTest {
     @Transactional
     @DisplayName("Should create user successfully")
     void createNewUserSuccess() {
-        CreateUserDTO userDTO = new CreateUserDTO("ZZZZ", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, false, false, false);
-        bh.app.chronomicon.dto.UserDTO newUser= userService.createNewUser(userDTO);
-        assertEquals("Sasuke", newUser.service_name());
+        CoreUserInformationDTO coreUserInformationDTO = new CoreUserInformationDTO("teste@teste.com", "1234567", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, "00000000000");
+        CreateAtcoDTO createAtcoDTO = new CreateAtcoDTO("ZZZZ", false, false, false);
+        CreateSystemUserDTO createSystemUserDTO = new CreateSystemUserDTO(Role.USER);
+        CreateUserDTO userDTO = new CreateUserDTO(coreUserInformationDTO, createAtcoDTO,createSystemUserDTO);
+        assertEquals("Sasuke", userDTO.coreUserInformationDTO().serviceName());
     }
 
     @Test
     @Transactional
     @DisplayName("Should shift already existing users hierarchy and create a new user")
+    @WithMockUser(username = "SARAM_TEST")
     void createNewUserSameRank() {
-        CreateUserDTO user0DTO = new CreateUserDTO("ZZZZ", "Rock Lee", "Lee", Rank.CAPITAO, false, false, false);
-        CreateUserDTO user1DTO = new CreateUserDTO("AAAA", "Sasuke Uchiha", "Sasuke", Rank.CAPITAO, false, false, false);
-        userService.createNewUser(user0DTO);
-        userService.createNewUser(user1DTO);
-        userRepository.flush();
+        CoreUserInformationDTO coreUserInformationDTO = new CoreUserInformationDTO("teste@teste.com", "1234567", "Sasuke Uchiha", "Sasuke", Rank.MAJOR, "00000000000");
+        CreateAtcoDTO createAtcoDTO = new CreateAtcoDTO("ZZZZ", false, false, false);
+        CreateSystemUserDTO createSystemUserDTO = new CreateSystemUserDTO(Role.USER);
+        CreateUserDTO userDTO = new CreateUserDTO(coreUserInformationDTO, createAtcoDTO,createSystemUserDTO);
+        CoreUserInformationDTO coreUserInformationDTO1 = new CoreUserInformationDTO("teste1@teste.com", "1234568", "Rock Lee", "Lee", Rank.MAJOR, "00000000000");
+        CreateAtcoDTO createAtcoDTO1 = new CreateAtcoDTO("AAAA", false, false, false);
+        CreateSystemUserDTO createSystemUserDTO1 = new CreateSystemUserDTO(Role.USER);
+        CreateUserDTO userDTO1 = new CreateUserDTO(coreUserInformationDTO1, createAtcoDTO1,createSystemUserDTO1);
+        userService.createNewUser(userDTO);
+        userService.createNewUser(userDTO1);
+        atcoRepository.flush();
         entityManager.clear();
-        bh.app.chronomicon.dto.UserDTO foundUser0 = userService.findUserByLPNAReturnDTO ("ZZZZ");
-        bh.app.chronomicon.dto.UserDTO foundUser1 = userService.findUserByLPNAReturnDTO ("AAAA");
+        AtcoDTO foundUser0 = userService.findUserByLPNAReturnDTO ("ZZZZ");
+        AtcoDTO foundUser1 = userService.findUserByLPNAReturnDTO ("AAAA");
 
 
         assertEquals(0, foundUser0.hierarchy());
@@ -226,7 +274,7 @@ class UserServiceTest {
     void findUserByLPNAReturnDTOSuccess() {
          createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
-         bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNAReturnDTO ("ZZZZ");
+         AtcoDTO user = userService.findUserByLPNAReturnDTO ("ZZZZ");
         assertEquals("N. Uzumaki", user.service_name());
     }
 
@@ -246,7 +294,7 @@ class UserServiceTest {
     @Transactional
     @DisplayName("Should return exception when searching user passing ID as parameter")
     void findUserByIdFail() {
-        UserEntity user = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
+        AtcoEntity user = createUser(Rank.CAPITAO,  "ZZZZ", (short) 2, "Naruto Uzumaki", "N. Uzumaki",
                 false, true, false);
 
         assertThrows(NotFoundException.class, ()->{
@@ -257,6 +305,7 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should activate an inactive user")
+    @WithMockUser(username = "SARAM_TEST")
     void activateUser() {
         createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
                 true, true, false);
@@ -274,7 +323,7 @@ class UserServiceTest {
                 true, true, true, false);
         userService.activateUser("FFFF");
         entityManager.clear();
-        UserEntity user = userRepository.findUserByLPNA("FFFF");
+        AtcoEntity user = atcoRepository.findUserByLPNA("FFFF");
         boolean userStatus = user.isActive();
         short hierarchy = user.getHierarchy();
         assertTrue(userStatus);
@@ -284,6 +333,7 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should deactivate an active user")
+    @WithMockUser(username = "SARAM_TEST")
     void deactivateUser() {
         createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Son Goku", "Goku",
                 true, true, false);
@@ -301,7 +351,7 @@ class UserServiceTest {
                 true, true, true, false);
         userService.deactivateUser("BBBB");
         entityManager.clear();
-        UserEntity user = userRepository.findUserByLPNA("BBBB");
+        AtcoEntity user = atcoRepository.findUserByLPNA("BBBB");
         boolean userStatus = user.isActive();
         short hierarchy = user.getHierarchy();
         assertFalse(userStatus);
@@ -380,12 +430,13 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should activate an inactive user when user list is empty")
+    @WithMockUser(username = "SARAM_TEST")
     void activateUserWhenListIsEmpty() {
         createUser(Rank.SUBOFICIAL, "AAAA", (short) 1005, "Son Goku", "Goku",
                 true, true, false, false);
         userService.activateUser("AAAA");
         entityManager.clear();
-        UserEntity user = userRepository.findUserByLPNA("AAAA");
+        AtcoEntity user = atcoRepository.findUserByLPNA("AAAA");
         boolean userStatus = user.isActive();
         short hierarchy = user.getHierarchy();
         assertTrue(userStatus);
@@ -395,15 +446,16 @@ class UserServiceTest {
     @Test
     @Transactional
     @DisplayName("Should update user with provided data and don't change unprovided data")
+    @WithMockUser(username = "SARAM_TEST")
     void updateUser() {
         createUser(Rank.SUBOFICIAL, "AAAA", (short) 0, "Tanjiro Kamado", "Tanjiro",
                 true, true, false, true);
         UpdateUserDTO updateDto = new UpdateUserDTO ("GGGG", null, null, "Kamado",
                 null, null,null);
         userService.updateUser ("AAAA", updateDto);
-        userRepository.flush ();
+        atcoRepository.flush ();
         entityManager.clear ();
-        bh.app.chronomicon.dto.UserDTO user = userService.findUserByLPNAReturnDTO ("GGGG");
+        AtcoDTO user = userService.findUserByLPNAReturnDTO ("GGGG");
         assertEquals ("Kamado", user.service_name ());
         assertEquals (Rank.SUBOFICIAL, user.rank ());
     }

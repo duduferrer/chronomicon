@@ -1,10 +1,12 @@
 package bh.app.chronomicon.controller;
 
 
+import bh.app.chronomicon.dto.CoreUserInformationDTO;
 import bh.app.chronomicon.dto.CreateUserDTO;
 import bh.app.chronomicon.dto.UpdateUserDTO;
-import bh.app.chronomicon.dto.UserDTO;
-import bh.app.chronomicon.service.UserService;
+import bh.app.chronomicon.dto.AtcoDTO;
+import bh.app.chronomicon.model.entities.AtcoEntity;
+import bh.app.chronomicon.service.AtcoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -22,14 +24,14 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService service;
+    private AtcoService service;
 
     @Operation(summary = "Busca Usuários", description = "Retorna uma lista com todos os usuários ativos.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Retorna uma lista com os usuários"),
     })
     @GetMapping
-    public List<UserDTO> findUsers(){
+    public List<AtcoDTO> findUsers(){
         return service.findUsers();
     }
 
@@ -38,7 +40,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Retorna uma lista com os usuários"),
     })
     @GetMapping(value = {"/sups"})
-    public List<UserDTO> findSupervisors(){
+    public List<AtcoDTO> findSupervisors(){
         return service.findSupervisors();
     }
 
@@ -47,7 +49,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Retorna uma lista com os usuários"),
     })
     @GetMapping(value = {"/instrutores"})
-    public List<UserDTO> findInsts(){
+    public List<AtcoDTO> findInsts(){
         return service.findInstructors();
     }
 
@@ -56,7 +58,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Retorna uma lista com os usuários"),
     })
     @GetMapping(value = {"/estagiarios"})
-    public List<UserDTO> findTrainees(){
+    public List<AtcoDTO> findTrainees(){
         return service.findTrainees();
     }
 
@@ -65,7 +67,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Retorna uma lista com os usuários"),
     })
     @GetMapping(value = {"/operadores"})
-    public List<UserDTO> findOps(){
+    public List<AtcoDTO> findOps(){
         return service.findOnlyOperators();
     }
 
@@ -75,7 +77,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
     })
     @GetMapping(value = {"/{id}"})
-    public UserDTO findByID(@PathVariable long id){
+    public AtcoDTO findByID(@PathVariable long id){
         return service.findUserById(id);
     }
 
@@ -86,10 +88,11 @@ public class UserController {
             @ApiResponse(responseCode = "409", description = "Falha ao criar usuário"),
     })
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserDTO user){
-        UserDTO savedUser = service.createNewUser(user);
-        URI location = URI.create(savedUser.lpna_identifier());
-        return ResponseEntity.created(location).body(savedUser);
+    public ResponseEntity<AtcoDTO> createUser(@RequestBody CreateUserDTO user){
+        AtcoEntity savedUser = service.createNewUser(user);
+        AtcoDTO atcoDTO = new AtcoDTO(savedUser);
+        URI location = URI.create(atcoDTO.lpna_identifier());
+        return ResponseEntity.created(location).body(atcoDTO);
     }
 
     @Operation(summary = "Busca usuário por LPNA", description = "Recebe um parametro LPNA(texto) e retorna um usuário")
@@ -98,7 +101,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Retorna usuário não encontrado")
     })
     @GetMapping(value = {"/lpna/{lpna}"})
-    public UserDTO findByLPNA(@PathVariable String lpna){
+    public AtcoDTO findByLPNA(@PathVariable String lpna){
         return service.findUserByLPNAReturnDTO (lpna);
     }
 

@@ -8,8 +8,5 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class ChronomiconApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
 
 }

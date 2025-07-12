@@ -1,25 +1,21 @@
 package bh.app.chronomicon.service;
 
-import bh.app.chronomicon.dto.AuthenticationDTO;
-import bh.app.chronomicon.dto.RegisterSystemUserDTO;
-import bh.app.chronomicon.dto.UpdatePasswordDTO;
-import bh.app.chronomicon.dto.AtcoDTO;
+import bh.app.chronomicon.dto.*;
 import bh.app.chronomicon.exception.ConflictException;
 import bh.app.chronomicon.exception.ForbiddenException;
 import bh.app.chronomicon.exception.ServerException;
+import bh.app.chronomicon.model.entities.CoreUserInformationEntity;
 import bh.app.chronomicon.model.entities.SystemUserEntity;
 import bh.app.chronomicon.model.entities.AtcoEntity;
 import bh.app.chronomicon.model.enums.Role;
+import bh.app.chronomicon.repository.CoreUserInformationRepository;
 import bh.app.chronomicon.repository.SystemUserRepository;
 import bh.app.chronomicon.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,7 +37,10 @@ public class AuthService implements UserDetailsService {
     JwtUtil jwtUtil;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    CoreUserInformationRepository coreUserInformationRepository;
 
+    
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
 
@@ -127,38 +125,6 @@ public class AuthService implements UserDetailsService {
         }
     }
     
-    public SystemUserEntity registerSystemUser(RegisterSystemUserDTO registerSystemUserDTO, String token){
-        if(systemUserRepository.findUserBySaram (registerSystemUserDTO.saram ())!=null){
-            log.warn ("Erro ao criar usuário, SARAM já cadastrado. SARAM: {}", registerSystemUserDTO.saram ());
-            throw new ConflictException("Já existe usuário com esse SARAM");
-        }
-        Timestamp now = Timestamp.valueOf (LocalDateTime.now ());
-        String firstPassword = registerSystemUserDTO.lpna ()+registerSystemUserDTO.lpna ();
-        String encryptedPassword = passwordEncoder.encode (firstPassword);
-        AtcoEntity userEntity = userService.findUser (registerSystemUserDTO.lpna ());
-        SystemUserEntity systemUserEntity = new SystemUserEntity (
-                registerSystemUserDTO.role (),
-                userEntity,
-                now,
-                now,
-                true,
-                null,
-                encryptedPassword,
-                false,
-                false,
-                false,
-                registerSystemUserDTO.emailAddress (),
-                registerSystemUserDTO.saram ()
-        );
-        try {
-            systemUserRepository.save (systemUserEntity);
-            log.info("Usuário {} criado com sucesso. Por: {}", systemUserEntity.getId(), getSystemUser(token).getUsername());
-        } catch (RuntimeException e) {
-            log.error ("Erro ao salvar novo usuário. {}", e.getMessage () );
-            throw new ServerException ("Erro ao salvar usuário.");
-        }
-        return systemUserEntity;
-    }
     
     public Role getAuthenticatedUserRole() {
         
@@ -169,6 +135,34 @@ public class AuthService implements UserDetailsService {
         }
         return null;
         
+    }
+    
+    public String getActiveUserUsername(){
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+    
+    public CoreUserInformationEntity createCoreUser(CreateUserDTO createUserDTO) {
+        String saram = createUserDTO.coreUserInformationDTO().saram();
+        Optional<CoreUserInformationEntity> optionalCoreUserInformationEntity = coreUserInformationRepository.findBySaram(saram);
+        if(optionalCoreUserInformationEntity.isPresent()){
+            return optionalCoreUserInformationEntity.get();
+        }else{
+            CoreUserInformationEntity newUser = new CoreUserInformationEntity();
+            newUser.setEmailAddress(createUserDTO.coreUserInformationDTO().emailAddress());
+            newUser.setFullName(createUserDTO.coreUserInformationDTO().fullName());
+            newUser.setRank(createUserDTO.coreUserInformationDTO().rank());
+            newUser.setSaram(createUserDTO.coreUserInformationDTO().saram());
+            newUser.setService_name(createUserDTO.coreUserInformationDTO().serviceName());
+            newUser.setPhoneNumber(createUserDTO.coreUserInformationDTO().phoneNumber());
+            try{
+                CoreUserInformationEntity newUserCreated = coreUserInformationRepository.save(newUser);
+                log.info("Novo usuário salvo. ({})", newUserCreated.getId());
+                return newUserCreated;
+            }catch(RuntimeException e){
+                log.error("Erro ao salvar usuário({}). {}", newUser.getSaram(), e.getMessage());
+                throw new ServerException("Erro ao salvar usuário.");
+            }
+        }
     }
 
 }
